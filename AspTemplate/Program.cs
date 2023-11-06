@@ -5,6 +5,8 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.DataProtection;
 using NewTemplate.Context;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -43,6 +45,7 @@ builder.Services.AddCors(o =>
         policy
         .AllowAnyHeader()
         .AllowAnyMethod()
+        .AllowCredentials()
         .WithOrigins(builder.Configuration.GetSection("AllowedOrigins").Get<string[]>());
     });
 });
@@ -137,7 +140,6 @@ int expireMinutes = int.Parse(builder.Configuration["AuthenticationExpireMinutes
 // });
 #endregion
 
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -196,7 +198,7 @@ else
     //     c.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information || e.Level == LogEventLevel.Warning)
     //         .WriteTo.RollingFile($"./logs/info.log", outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}"))
     // .WriteTo.Logger(c =>
-    //     c.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Error)
+    //     c.Filter.ByIncludingOnly(e => e.Level >= LogEventLevel.Error)
     //         .WriteTo.RollingFile($"./logs/error.log", outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}"))
     // .CreateLogger();
     // builder.Logging.AddSerilog(Log.Logger);
@@ -227,7 +229,6 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
 app.Run();
 
 //dotnet ef dbcontext scaffold "Data Source=127.0.0.1;Initial Catalog=etdb;User ID=sa;Password=QU3yYwn9Jirkk5FX7yi1uZeK06H6iR89OaV5QAbH0nmbqXsx"  Microsoft.EntityFrameworkCore.SqlServer -f --no-pluralize --no-onconfiguring -o Context

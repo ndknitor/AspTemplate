@@ -15,7 +15,7 @@ public class LoggingMiddleware
         string ip = context.Connection.RemoteIpAddress.ToString();//context.Request.Headers[MessageConstants.MIDDLE_WARE_CONFIG_IP].FirstOrDefault();
         logger.LogInformation(@$"
 [REQUEST]
-💳 Connection ID : {context.Connection.Id}
+💳 Connection Id : {context.Connection.Id}
 👤 Client IP: {ip}
 🕵️ User-Agent: {context.Request.Headers["User-Agent"].FirstOrDefault()}
 🛣️ Path: {context.Request.Path}
@@ -29,7 +29,7 @@ public class LoggingMiddleware
             var responseString =
 @$"
 [RESPONSE]
-💳 Connection ID : {context.Connection.Id}
+💳 Connection Id : {context.Connection.Id}
 👤 Client IP: {ip}
 🛣️ Path: {context.Request.Path}
 🤖 Method: {context.Request.Method}
@@ -58,9 +58,10 @@ public class LoggingMiddleware
        leaveOpen: true))
             {
                 reader.BaseStream.Seek(0, SeekOrigin.Begin);
-                requestBody =
-context.Request.ContentType == System.Net.Mime.MediaTypeNames.Application.Json ?
-await reader.ReadToEndAsync() : "Not a JSON request";
+                requestBody = context.Request.ContentType == System.Net.Mime.MediaTypeNames.Application.Json ?
+                    await reader.ReadToEndAsync() 
+                    : 
+                    "Not a JSON request";
             }
 
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
@@ -68,7 +69,7 @@ await reader.ReadToEndAsync() : "Not a JSON request";
             var responseString =
 @$"
 [RESPONSE]
-💳 Connection ID : {context.Connection.Id}
+💳 Connection Id : {context.Connection.Id}
 👤 Client IP: {ip}
 🛣️ Path: {context.Request.Path}
 🤖 Method: {context.Request.Method}

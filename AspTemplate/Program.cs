@@ -7,12 +7,22 @@ using NewTemplate.Context;
 using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
+builder.Services.AddHttpContextAccessor();
+builder.Services.ServiceConfiguration();
+builder.Services.AddDbContext<EtdbContext>(o => o.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@"./keys"));
+builder.Services.AddHostedService<PreloadHostedService>();
+
 builder.WebHost.UseKestrel(option => option.AddServerHeader = false).ConfigureKestrel((context, option) =>
 {
+    // option.Limits.MaxConcurrentConnections = 1;
+    // option.Limits.MaxConcurrentUpgradedConnections = 1;
+    option.Limits.MaxResponseBufferSize = 1;
     if (context.HostingEnvironment.IsProduction())
     {
         option.ConfigureHttpsDefaults(o =>
@@ -22,12 +32,6 @@ builder.WebHost.UseKestrel(option => option.AddServerHeader = false).ConfigureKe
         });
     }
 });
-builder.Services.AddHttpContextAccessor();
-builder.Services.ServiceConfiguration();
-builder.Services.AddDbContext<EtdbContext>(o => o.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).UseSqlServer(builder.Configuration.GetConnectionString("Default")));
-builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@"./keys"));
-builder.Services.AddHostedService<PreloadHostedService>();
-
 builder.Services.AddControllers().AddJsonOptions(o =>
 {
     o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
@@ -45,16 +49,17 @@ builder.Services.AddCors(o =>
         policy
         .AllowAnyHeader()
         .AllowAnyMethod()
-        .AllowCredentials()
         .WithOrigins(builder.Configuration.GetSection("AllowedOrigins").Get<string[]>());
     });
 });
-builder.Services.AddStackExchangeRedisCache(options =>
-{
-    options.Configuration = "localhost:6379"; // Change this to your Redis server connection
-    options.InstanceName = "SampleApp";
-});
-builder.Services.AddResponseCaching();
+
+builder.Services.AddScoped((ins) => ConnectionMultiplexer.Connect("localhost").GetDatabase());
+// builder.Services.AddStackExchangeRedisCache(options =>
+// {
+//     options.Configuration = "localhost:6379"; // Change this to your Redis server connection
+//     options.InstanceName = "SampleApp";
+// });
+
 int expireMinutes = int.Parse(builder.Configuration["AuthenticationExpireMinutes"]);
 #region Combine with JWT and Cookie
 // builder.Services.AddAuthentication(options =>
@@ -206,19 +211,25 @@ else
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
-if (app.Environment.IsDevelopment())
-{
+// app.Use(async (context, next) =>
+// {
+//     bool slow = Random.Shared.NextDouble() <= 0.1;
+//     await Task.Delay(Random.Shared.Next(500, 1000) * Random.Shared.Next(1, 5) * (slow ? Random.Shared.Next(2, 5) : 1));
+//     await next();
+// });
 
-}
-else
+if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+if (app.Environment.IsProduction())
+{
+    app.UseMiddleware<LoggingMiddleware>();
     app.UseForwardedHeaders(new ForwardedHeadersOptions
     {
         ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
     });
-    app.UseMiddleware<LoggingMiddleware>();
     app.UseHsts();
     app.UseHttpsRedirection();
 }

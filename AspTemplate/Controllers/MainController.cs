@@ -63,18 +63,18 @@ namespace NewTemplate.Controllers
             return Ok(User.UserId<int>());
         }
         [HttpPost("login")]
-        public async Task<IActionResult> Post([FromQuery] string userId)
+        public async Task<IActionResult> Post([FromBody] RSeat seat)
         {
-            ClaimsPrincipal principal = new ClaimsPrincipal();
-            ClaimsIdentity identity = new ClaimsIdentity(
-                new Claim[]
-                {
-                    new Claim(ClaimTypes.NameIdentifier, userId),
-                    new Claim(ClaimTypes.Role, "User")
-                },
-                CookieAuthenticationDefaults.AuthenticationScheme);
-            principal.AddIdentity(identity);
-            await HttpContext.SignInAsync(principal);
+            // ClaimsPrincipal principal = new ClaimsPrincipal();
+            // ClaimsIdentity identity = new ClaimsIdentity(
+            //     new Claim[]
+            //     {
+            //         new Claim(ClaimTypes.NameIdentifier, userId),
+            //         new Claim(ClaimTypes.Role, "User")
+            //     },
+            //     CookieAuthenticationDefaults.AuthenticationScheme);
+            // principal.AddIdentity(identity);
+            // await HttpContext.SignInAsync(principal);
             return Ok();
         }
     }

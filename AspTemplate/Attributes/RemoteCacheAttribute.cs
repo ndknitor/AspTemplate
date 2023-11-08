@@ -2,6 +2,7 @@ using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Caching.Distributed;
+using StackExchange.Redis;
 public class RemoteCacheAttribute : ActionFilterAttribute
 {
     private readonly int expriedMin;
@@ -13,13 +14,13 @@ public class RemoteCacheAttribute : ActionFilterAttribute
     }
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
-        var cache = context.HttpContext.RequestServices.GetRequiredService<IDistributedCache>();
+        var cache = context.HttpContext.RequestServices.GetRequiredService<IDatabase>();
         string cacheKey = $"RemoteCache:{context.HttpContext.Request.Path}" + (queryIdentity == true ? context.HttpContext.Request.QueryString : "");
 
         // Attempt to retrieve the result from the cache
-        var cachedResult = await cache.GetStringAsync(cacheKey);
+        var cachedResult = await cache.StringGetAsync(cacheKey);
 
-        if (cachedResult == null)
+        if (!cachedResult.HasValue)
         {
             // If the result is not in the cache, proceed with the action
             var resultContext = await next();
@@ -28,13 +29,8 @@ public class RemoteCacheAttribute : ActionFilterAttribute
             if (resultContext.Result is Microsoft.AspNetCore.Mvc.ObjectResult objectResult)
             {
                 var resultContent = Newtonsoft.Json.JsonConvert.SerializeObject(objectResult.Value);
-                var cacheEntryOptions = new DistributedCacheEntryOptions
-                {
-                    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(expriedMin)
-                };
-
                 // Store the result in the cache
-                await cache.SetStringAsync(cacheKey, resultContent, cacheEntryOptions);
+                await cache.StringSetAsync(cacheKey, resultContent, TimeSpan.FromMinutes(expriedMin));
             }
         }
         else

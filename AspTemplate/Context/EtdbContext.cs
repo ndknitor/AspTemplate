@@ -7,10 +7,6 @@ namespace NewTemplate.Context
 {
     public partial class EtdbContext : DbContext
     {
-        public EtdbContext()
-        {
-        }
-
         public EtdbContext(DbContextOptions<EtdbContext> options)
             : base(options)
         {

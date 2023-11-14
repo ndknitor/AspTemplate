@@ -8,6 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 using StackExchange.Redis;
+using System.Net;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -22,7 +27,7 @@ builder.WebHost.UseKestrel(option => option.AddServerHeader = false).ConfigureKe
 {
     // option.Limits.MaxConcurrentConnections = 1;
     // option.Limits.MaxConcurrentUpgradedConnections = 1;
-    option.Limits.MaxResponseBufferSize = 1;
+    //option.Limits.MaxResponseBufferSize = 1;
     if (context.HostingEnvironment.IsProduction())
     {
         option.ConfigureHttpsDefaults(o =>
@@ -60,7 +65,7 @@ builder.Services.AddScoped((ins) => ConnectionMultiplexer.Connect("localhost").G
 //     options.InstanceName = "SampleApp";
 // });
 
-int expireMinutes = int.Parse(builder.Configuration["AuthenticationExpireMinutes"]);
+int expireHours = int.Parse(builder.Configuration["AuthenticationExpireHours"]);
 #region Combine with JWT and Cookie
 // builder.Services.AddAuthentication(options =>
 // {
@@ -78,7 +83,7 @@ int expireMinutes = int.Parse(builder.Configuration["AuthenticationExpireMinutes
 //         context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 //         return Task.CompletedTask;
 //     };
-//     options.ExpireTimeSpan = TimeSpan.FromMinutes(expireMinutes);
+//     options.ExpireTimeSpan = TimeSpan.FromHours(expireHours);
 // }).AddJwtBearer("Bearer", options =>
 // {
 //     options.TokenValidationParameters = new TokenValidationParameters
@@ -90,7 +95,7 @@ int expireMinutes = int.Parse(builder.Configuration["AuthenticationExpireMinutes
 //         ValidateIssuerSigningKey = true,
 //         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtProvider:SecretKey"])),
 //         ValidateLifetime = true,
-//         ClockSkew = TimeSpan.FromMinutes(expireMinutes)
+//         ClockSkew = TimeSpan.FromHours(expireHours)
 //     };
 // }).AddPolicyScheme("JWT_OR_COOKIE", "JWT_OR_COOKIE", options =>
 // {
@@ -117,7 +122,7 @@ int expireMinutes = int.Parse(builder.Configuration["AuthenticationExpireMinutes
 //         context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 //         return Task.CompletedTask;
 //     };
-//     options.ExpireTimeSpan = TimeSpan.FromMinutes(expireMinutes);
+//     options.ExpireTimeSpan = TimeSpan.FromHours(expireHours);
 //     options.DataProtectionProvider = DataProtectionProvider.Create(new DirectoryInfo(@"./keys"));
 // });
 #endregion
@@ -139,7 +144,7 @@ int expireMinutes = int.Parse(builder.Configuration["AuthenticationExpireMinutes
 //         ValidateIssuer = true,
 //         ValidateAudience = true,
 //         ValidateLifetime = true,
-//         ClockSkew = TimeSpan.FromMinutes(expireMinutes),
+//         ClockSkew = TimeSpan.FromMinutes(expireHours),
 //         ValidateIssuerSigningKey = true
 //     };
 // });
@@ -173,11 +178,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-if (builder.Environment.IsDevelopment())
-{
-
-}
-else
+if (builder.Environment.IsProduction())
 {
     // builder.Logging.ClearProviders();
     // Log.Logger =
@@ -225,15 +226,14 @@ if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
 }
 if (app.Environment.IsProduction())
 {
-    app.UseMiddleware<LoggingMiddleware>();
     app.UseForwardedHeaders(new ForwardedHeadersOptions
     {
         ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
     });
     app.UseHsts();
     app.UseHttpsRedirection();
+    app.UseMiddleware<LoggingMiddleware>();
 }
-
 app.UseStaticFiles();
 app.UseCors();
 

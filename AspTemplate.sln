@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewTemplate", "AspTemplate\NewTemplate.csproj", "{4D36419B-5B25-4E71-8D02-B870E83CB704}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspTemplate", "AspTemplate\AspTemplate.csproj", "{5AC07D49-E75E-485E-8687-64170B33EF00}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -14,9 +14,9 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{4D36419B-5B25-4E71-8D02-B870E83CB704}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4D36419B-5B25-4E71-8D02-B870E83CB704}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4D36419B-5B25-4E71-8D02-B870E83CB704}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4D36419B-5B25-4E71-8D02-B870E83CB704}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5AC07D49-E75E-485E-8687-64170B33EF00}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5AC07D49-E75E-485E-8687-64170B33EF00}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5AC07D49-E75E-485E-8687-64170B33EF00}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5AC07D49-E75E-485E-8687-64170B33EF00}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

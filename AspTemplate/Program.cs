@@ -1,27 +1,19 @@
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
+using AspTemplate.Context;
 using Microsoft.AspNetCore.DataProtection;
-using NewTemplate.Context;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Serilog;
-using Serilog.Events;
 using StackExchange.Redis;
-using System.Net;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 var builder = WebApplication.CreateBuilder(args);
-// Add services to the container.
-builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
-builder.Services.AddHttpContextAccessor();
-builder.Services.ServiceConfiguration();
-builder.Services.AddDbContext<EtdbContext>(o => o.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).UseSqlServer(builder.Configuration.GetConnectionString("Default")));
-builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@"./keys"));
-builder.Services.AddHostedService<PreloadHostedService>();
+if (builder.Environment.IsProduction())
+{
+    builder.Logging.ClearProviders();
+    Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration.GetSection("Logging")).CreateLogger();
+    builder.Logging.AddSerilog(Log.Logger);
+}
 
 builder.WebHost.UseKestrel(option => option.AddServerHeader = false).ConfigureKestrel((context, option) =>
 {
@@ -42,11 +34,6 @@ builder.Services.AddControllers().AddJsonOptions(o =>
     o.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     o.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 });
-builder.Services.AddRouting(o =>
-{
-    o.ConstraintMap.Add("ulong", typeof(ULongRouteConstraint));
-    o.ConstraintMap.Add("uint", typeof(UIntRouteConstraint));
-});
 builder.Services.AddCors(o =>
 {
     o.AddDefaultPolicy(policy =>
@@ -57,13 +44,39 @@ builder.Services.AddCors(o =>
         .WithOrigins(builder.Configuration.GetSection("AllowedOrigins").Get<string[]>());
     });
 });
-
-builder.Services.AddScoped((ins) => ConnectionMultiplexer.Connect("localhost").GetDatabase());
-// builder.Services.AddStackExchangeRedisCache(options =>
-// {
-//     options.Configuration = "localhost:6379"; // Change this to your Redis server connection
-//     options.InstanceName = "SampleApp";
-// });
+builder.Services.AddRouting(o =>
+{
+    o.ConstraintMap.Add("ulong", typeof(ULongRouteConstraint));
+    o.ConstraintMap.Add("uint", typeof(UIntRouteConstraint));
+});
+builder.Services.AddSwaggerGen(c =>
+{
+    c.OperationFilter<SwaggerExcludeFilter>();
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Scheme = "bearer",
+        Description = "Please insert JWT token into field"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] { }
+            }
+    });
+});
+builder.Services.AddEndpointsApiExplorer();
+//builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@"./keys"));
 
 int expireHours = int.Parse(builder.Configuration["AuthenticationExpireHours"]);
 #region Combine with JWT and Cookie
@@ -150,81 +163,22 @@ int expireHours = int.Parse(builder.Configuration["AuthenticationExpireHours"]);
 // });
 #endregion
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(c =>
-{
-    c.OperationFilter<SwaggerExcludeFilter>();
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Type = SecuritySchemeType.Http,
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Scheme = "bearer",
-        Description = "Please insert JWT token into field"
-    });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-            {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
-                },
-                new string[] { }
-            }
-    });
-});
-
-if (builder.Environment.IsProduction())
-{
-    // builder.Logging.ClearProviders();
-    // Log.Logger =
-    // new LoggerConfiguration()
-    // .MinimumLevel.Verbose()
-    // .Filter.ByExcluding(e =>
-    // {
-    //     var excludedNamespaces = new List<string>
-    //     {
-    //         "Microsoft.AspNetCore",
-    //         "Microsoft.EntityFrameworkCore"
-    //     };
-    //     if (e.Properties.TryGetValue("SourceContext", out var sourceContextProperty) &&
-    //             sourceContextProperty is ScalarValue sourceContextValue)
-    //     {
-    //         var sourceContext = sourceContextValue.Value.ToString();
-    //         return excludedNamespaces.Any(excludedNamespace => sourceContext.StartsWith(excludedNamespace));
-    //     }
-
-    //     return false;
-    // })
-    // .WriteTo.Logger(c =>
-    //     c.Filter.ByIncludingOnly(e => e.Level == LogEventLevel.Information || e.Level == LogEventLevel.Warning)
-    //         .WriteTo.RollingFile($"./logs/info.log", outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}"))
-    // .WriteTo.Logger(c =>
-    //     c.Filter.ByIncludingOnly(e => e.Level >= LogEventLevel.Error)
-    //         .WriteTo.RollingFile($"./logs/error.log", outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] [{SourceContext}] {Message:lj}{NewLine}{Exception}"))
-    // .CreateLogger();
-    // builder.Logging.AddSerilog(Log.Logger);
-}
+builder.Services.ServiceConfiguration();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddDbContext<EtdbContext>(o => o.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+//builder.Services.AddScoped((ins) => ConnectionMultiplexer.Connect("localhost").GetDatabase());
+builder.Services.AddHostedService<PreloadHostedService>();
+builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
 
 var app = builder.Build();
 
-// app.Use(async (context, next) =>
-// {
-//     bool slow = Random.Shared.NextDouble() <= 0.1;
-//     await Task.Delay(Random.Shared.Next(500, 1000) * Random.Shared.Next(1, 5) * (slow ? Random.Shared.Next(2, 5) : 1));
-//     await next();
-// });
-
+// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-if (app.Environment.IsProduction())
+else
 {
     app.UseForwardedHeaders(new ForwardedHeadersOptions
     {
@@ -234,12 +188,13 @@ if (app.Environment.IsProduction())
     app.UseHttpsRedirection();
     app.UseMiddleware<LoggingMiddleware>();
 }
+
 app.UseStaticFiles();
 app.UseCors();
-
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
 app.Run();
 
-//dotnet ef dbcontext scaffold "Data Source=127.0.0.1;Initial Catalog=etdb;User ID=sa;Password=QU3yYwn9Jirkk5FX7yi1uZeK06H6iR89OaV5QAbH0nmbqXsx"  Microsoft.EntityFrameworkCore.SqlServer -f --no-pluralize --no-onconfiguring -o Context
+//dotnet ef dbcontext scaffold "Data Source=127.0.0.1;TrustServerCertificate=True;Initial Catalog=etdb;User ID=sa;Password=QU3yYwn9Jirkk5FX7yi1uZeK06H6iR89OaV5QAbH0nmbqXsx"  Microsoft.EntityFrameworkCore.SqlServer -f --no-pluralize --no-onconfiguring -o Context

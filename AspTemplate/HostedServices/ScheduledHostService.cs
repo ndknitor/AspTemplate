@@ -1,6 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using NewTemplate.Context;
-
 public class ScheduledHostService : BackgroundService
 {
     private readonly ILogger<ScheduledHostService> _logger;

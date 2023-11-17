@@ -1,12 +1,12 @@
 # Base image
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 # Set the working directory
 WORKDIR /app
 COPY . ./
 RUN dotnet restore
 RUN dotnet publish -c Release -o out
 # Final image
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 # Set the working directory
 WORKDIR /app
 # Copy the published output from the build image
@@ -14,7 +14,7 @@ COPY --from=build /app/out .
 RUN chown -R www-data /app
 USER www-data:www-data
 # Expose the desired port (replace 80 with your port number if needed)
-ENTRYPOINT ["dotnet", "NewTemplate.dll"]
+ENTRYPOINT ["dotnet", "AspTemplate.dll"]
 
 #build the image
 #docker build -t new-template .

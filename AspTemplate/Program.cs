@@ -20,14 +20,14 @@ builder.WebHost.UseKestrel(option => option.AddServerHeader = false).ConfigureKe
     // option.Limits.MaxConcurrentConnections = 1;
     // option.Limits.MaxConcurrentUpgradedConnections = 1;
     //option.Limits.MaxResponseBufferSize = 1;
-    if (context.HostingEnvironment.IsProduction())
-    {
-        option.ConfigureHttpsDefaults(o =>
-        {
-            o.AllowAnyClientCertificate();
-            o.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2("certificate.pfx", "123456", System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.PersistKeySet);
-        });
-    }
+    // if (context.HostingEnvironment.IsProduction())
+    // {
+    //     option.ConfigureHttpsDefaults(o =>
+    //     {
+    //         o.AllowAnyClientCertificate();
+    //         o.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2("certificate.pfx", "123456", System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.PersistKeySet);
+    //     });
+    // }
 });
 builder.Services.AddControllers().AddJsonOptions(o =>
 {
@@ -76,7 +76,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 builder.Services.AddEndpointsApiExplorer();
-//builder.Services.AddDataProtection().PersistKeysToFileSystem(new DirectoryInfo(@"./keys"));
 
 int expireHours = int.Parse(builder.Configuration["AuthenticationExpireHours"]);
 #region Combine with JWT and Cookie
@@ -136,7 +135,6 @@ int expireHours = int.Parse(builder.Configuration["AuthenticationExpireHours"]);
 //         return Task.CompletedTask;
 //     };
 //     options.ExpireTimeSpan = TimeSpan.FromHours(expireHours);
-//     options.DataProtectionProvider = DataProtectionProvider.Create(new DirectoryInfo(@"./keys"));
 // });
 #endregion
 

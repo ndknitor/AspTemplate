@@ -1,11 +1,9 @@
 using System.Text.Json.Serialization;
 using AspTemplate.Context;
-using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Serilog;
-using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 if (builder.Environment.IsProduction())

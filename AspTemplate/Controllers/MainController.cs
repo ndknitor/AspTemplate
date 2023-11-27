@@ -15,26 +15,5 @@ namespace NewTemplate.Controllers
             float a = 7.11f / 9.32f;
             return Ok(new { date = a.ToString("0.000000000000000000000000000000000") });
         }
-        [Authorize(Roles = "User")]
-        [HttpGet("authorize")]
-        public async Task<IActionResult> GetAuth()
-        {
-            return Ok();
-        }
-        [HttpPost("login")]
-        public async Task<IActionResult> Post()
-        {
-            // ClaimsPrincipal principal = new ClaimsPrincipal();
-            // ClaimsIdentity identity = new ClaimsIdentity(
-            //     new Claim[]
-            //     {
-            //         new Claim(ClaimTypes.NameIdentifier, userId),
-            //         new Claim(ClaimTypes.Role, "User")
-            //     },
-            //     CookieAuthenticationDefaults.AuthenticationScheme);
-            // principal.AddIdentity(identity);
-            // await HttpContext.SignInAsync(principal);
-            return Ok();
-        }
     }
 }

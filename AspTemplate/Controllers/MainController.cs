@@ -9,6 +9,11 @@ namespace NewTemplate.Controllers
     [Route("/api/[controller]")]
     public class MainController : ControllerBase
     {
+        [HttpGet]
+        public IActionResult GetPage([FromQuery] PagingRequest request)
+        {
+            return Ok(Enumerable.Range((request.Page - 1) * request.Size, request.Size));
+        }
         [HttpGet("single")]
         public IActionResult Get()
         {

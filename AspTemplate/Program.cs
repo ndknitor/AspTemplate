@@ -163,7 +163,7 @@ builder.Services.ServiceConfiguration();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<EtdbContext>(o => o.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 //builder.Services.AddScoped((ins) => ConnectionMultiplexer.Connect("localhost").GetDatabase());
-builder.Services.AddHostedService<PreloadHostedService>();
+//builder.Services.AddHostedService<PreloadHostedService>();
 builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
 
 var app = builder.Build();

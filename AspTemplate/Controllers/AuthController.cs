@@ -17,7 +17,7 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
     {
         if (environment.IsProduction())
         {
-            return Forbid();
+            return NotFound();
         }
         var claims = new[] {
             new Claim(ClaimTypes.NameIdentifier, id.ToString()),
@@ -26,6 +26,23 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
         await GetCookie(claims);
         return Ok(new StandardResponse
         {
+            Message = "Authenticate successfully"
+        });
+    }
+    [HttpGet("debug/jwt/{id:long}")]
+    public IActionResult DebugJwt([FromRoute] long id)
+    {
+        if (environment.IsProduction())
+        {
+            return NotFound();
+        }
+        var claims = new[] {
+            new Claim(ClaimTypes.NameIdentifier, id.ToString()),
+            new Claim(ClaimTypes.Role, "User")
+        };
+        return Ok(new SingleResponse<string>
+        {
+            Data = GetJwt(claims),
             Message = "Authenticate successfully"
         });
     }

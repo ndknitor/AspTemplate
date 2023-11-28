@@ -29,7 +29,7 @@ builder.WebHost.UseKestrel(option => option.AddServerHeader = false).ConfigureKe
     //         o.ServerCertificate = new System.Security.Cryptography.X509Certificates.X509Certificate2("certificate.pfx", "123456", System.Security.Cryptography.X509Certificates.X509KeyStorageFlags.PersistKeySet);
     //     });
     // }
-    
+
     /////////////       Create pfx file command     ///////////////////////////
     //openssl pkcs12 -export -out certificate.p12 -inkey key.pem -in cert.pem
     //openssl pkcs12 -in certificate.p12 -out certificate.pfx
@@ -100,6 +100,7 @@ builder.Services.AddAuthentication(options =>
         context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
         return Task.CompletedTask;
     };
+    options.Cookie.Name = "cookie";
     options.ExpireTimeSpan = TimeSpan.FromHours(expireHours);
 }).AddJwtBearer("Bearer", options =>
 {

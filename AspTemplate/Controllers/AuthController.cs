@@ -17,7 +17,7 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
     {
         if (environment.IsProduction())
         {
-            return NotFound();
+            return NotFound(null);
         }
         var claims = new[] {
             new Claim(ClaimTypes.NameIdentifier, id.ToString()),
@@ -34,7 +34,7 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
     {
         if (environment.IsProduction())
         {
-            return NotFound();
+            return NotFound(null);
         }
         var claims = new[] {
             new Claim(ClaimTypes.NameIdentifier, id.ToString()),

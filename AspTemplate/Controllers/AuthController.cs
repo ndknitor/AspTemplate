@@ -13,6 +13,16 @@ namespace NewTemplate.Controllers;
 [Route("/api/[controller]")]
 public class AuthController(IHttpContextAccessor accessor, IConfiguration configuration) : ControllerBase
 {
+    [HttpGet("logout")]
+    [Authorize]
+    public async Task<IActionResult> Logout()
+    {
+        await accessor.HttpContext.SignOutAsync();
+        return Ok(new StandardResponse
+        {
+            Message = "Logout successfully"
+        });
+    }
     [HttpPost("login/cookie")]
     public async Task<IActionResult> LoginCookie()
     {

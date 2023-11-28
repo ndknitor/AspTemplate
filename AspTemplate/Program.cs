@@ -31,6 +31,9 @@ builder.WebHost.UseKestrel(option => option.AddServerHeader = false).ConfigureKe
     // }
 
     /////////////       Create pfx file command     ///////////////////////////
+    /// openssl pkcs12 -export -out certificate.pfx -inkey private-key.pem -in certificate.pem
+    /// openssl pkcs12 -export -out certificate.pfx -inkey private-key.pem -in certificate.pem -passout pass:yourpassphrase
+
     //openssl pkcs12 -export -out certificate.p12 -inkey key.pem -in cert.pem
     //openssl pkcs12 -in certificate.p12 -out certificate.pfx
 });
@@ -139,6 +142,7 @@ builder.Services.AddAuthentication(options =>
 //         context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
 //         return Task.CompletedTask;
 //     };
+//     options.Cookie.Name = "cookie";
 //     options.ExpireTimeSpan = TimeSpan.FromHours(expireHours);
 // });
 #endregion

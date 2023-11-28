@@ -17,6 +17,36 @@ if (builder.Environment.IsProduction())
     Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration.GetSection("Logging")).CreateLogger();
     builder.Logging.AddSerilog(Log.Logger);
 }
+else
+{
+    builder.Services.AddSwaggerGen(c =>
+    {
+        c.OperationFilter<SwaggerExcludeFilter>();
+        c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+        {
+            Type = SecuritySchemeType.Http,
+            BearerFormat = "JWT",
+            In = ParameterLocation.Header,
+            Scheme = "bearer",
+            Description = "Please insert JWT token into field"
+        });
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement
+        {
+            {
+                new OpenApiSecurityScheme
+                {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                },
+                new string[] { }
+            }
+        });
+    });
+    builder.Services.AddEndpointsApiExplorer();
+}
 
 builder.WebHost.UseKestrel(option => option.AddServerHeader = false).ConfigureKestrel((context, option) =>
 {
@@ -59,33 +89,6 @@ builder.Services.AddRouting(o =>
     o.ConstraintMap.Add("ulong", typeof(ULongRouteConstraint));
     o.ConstraintMap.Add("uint", typeof(UIntRouteConstraint));
 });
-builder.Services.AddSwaggerGen(c =>
-{
-    c.OperationFilter<SwaggerExcludeFilter>();
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Type = SecuritySchemeType.Http,
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Scheme = "bearer",
-        Description = "Please insert JWT token into field"
-    });
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-            {
-                new OpenApiSecurityScheme
-                {
-                    Reference = new OpenApiReference
-                    {
-                        Type = ReferenceType.SecurityScheme,
-                        Id = "Bearer"
-                    }
-                },
-                new string[] { }
-            }
-    });
-});
-builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddHttpContextAccessor();
 
 int expireHours = int.Parse(builder.Configuration["AuthenticationExpireHours"]);

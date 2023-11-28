@@ -5,6 +5,7 @@ using System.Text.Json.Serialization;
 using AspTemplate.Context;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Localization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -88,6 +89,21 @@ builder.Services.AddRouting(o =>
 {
     o.ConstraintMap.Add("ulong", typeof(ULongRouteConstraint));
     o.ConstraintMap.Add("uint", typeof(UIntRouteConstraint));
+});
+builder.Services.Configure<ApiBehaviorOptions>(o =>
+{
+    o.InvalidModelStateResponseFactory = actionContext =>
+    {
+        Dictionary<string, string[]> error = new();
+        foreach (string item in actionContext.ModelState.Keys)
+        {
+            if (!string.IsNullOrEmpty(item))
+            {
+                error[item[0].ToString().ToLower() + item.Remove(0, 1)] = actionContext.ModelState[item].Errors.Select(e => e.ErrorMessage).ToArray();
+            }
+        }
+        return new BadRequestObjectResult(error);
+    };
 });
 builder.Services.AddHttpContextAccessor();
 

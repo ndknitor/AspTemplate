@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -117,6 +118,11 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
     {
         return Ok(accessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
     }
+    [HttpPost("test")]
+    public IActionResult Test([FromBody] SignInRequest request)
+    {
+        return Ok();
+    }
     private string GetJwt(IEnumerable<Claim> claims)
     {
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtProvider:SecretKey"]));
@@ -138,4 +144,17 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
         principal.AddIdentity(identity);
         await accessor.HttpContext.SignInAsync(principal);
     }
+}
+
+public class SignInRequest
+{
+    [Required]
+    [EmailAddress]
+    [MinLength(6)]
+    [MaxLength(128)]
+    public string Email { get; set; }
+    [Required]
+    [MinLength(8)]
+    [MaxLength(2048)]
+    public string Password { get; set; }
 }

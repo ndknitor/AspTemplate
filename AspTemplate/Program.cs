@@ -86,6 +86,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHttpContextAccessor();
 
 int expireHours = int.Parse(builder.Configuration["AuthenticationExpireHours"]);
 #region Combine with JWT and Cookie
@@ -172,12 +173,9 @@ builder.Services.AddAuthentication(options =>
 // });
 #endregion
 
-builder.Services.ServiceConfiguration();
-builder.Services.AddHttpContextAccessor();
 builder.Services.AddDbContext<EtdbContext>(o => o.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).UseSqlServer(builder.Configuration.GetConnectionString("Default")));
-//builder.Services.AddScoped((ins) => ConnectionMultiplexer.Connect("localhost").GetDatabase());
-//builder.Services.AddHostedService<PreloadHostedService>();
 builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
+builder.Services.ServiceConfiguration();
 
 var app = builder.Build();
 

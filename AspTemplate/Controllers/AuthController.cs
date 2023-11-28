@@ -1,4 +1,3 @@
-using System.ComponentModel.DataAnnotations;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -17,11 +16,19 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
     [Authorize]
     public async Task<IActionResult> Logout()
     {
-        await accessor.HttpContext.SignOutAsync();
-        return Ok(new StandardResponse
+        HttpContext context = accessor.HttpContext;
+        if (context.User.Identity.AuthenticationType == CookieAuthenticationDefaults.AuthenticationScheme)
         {
-            Message = "Logout successfully"
-        });
+            await context.SignOutAsync();
+            return Ok(new StandardResponse
+            {
+                Message = "Logout successfully"
+            });
+        }
+        else
+        {
+            return Forbid();
+        }
     }
     [HttpPost("login/cookie")]
     public async Task<IActionResult> LoginCookie()

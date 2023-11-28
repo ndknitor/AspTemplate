@@ -10,8 +10,25 @@ using Microsoft.IdentityModel.Tokens;
 namespace NewTemplate.Controllers;
 [ApiController]
 [Route("/api/[controller]")]
-public class AuthController(IHttpContextAccessor accessor, IConfiguration configuration) : ControllerBase
+public class AuthController(IHttpContextAccessor accessor, IConfiguration configuration, IWebHostEnvironment environment) : ControllerBase
 {
+    [HttpGet("debug/cookie/{id:long}")]
+    public async Task<IActionResult> DebugCookie([FromRoute] long id)
+    {
+        if (environment.IsProduction())
+        {
+            return Forbid();
+        }
+        var claims = new[] {
+            new Claim(ClaimTypes.NameIdentifier, id.ToString()),
+            new Claim(ClaimTypes.Role, "User")
+        };
+        await GetCookie(claims);
+        return Ok(new StandardResponse
+        {
+            Message = "Authenticate successfully"
+        });
+    }
     [HttpGet("logout")]
     [Authorize]
     public async Task<IActionResult> Logout()

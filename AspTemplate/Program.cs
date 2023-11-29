@@ -1,10 +1,8 @@
-using System.Globalization;
 using System.Net;
 using System.Text;
 using System.Text.Json.Serialization;
 using AspTemplate.Context;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -92,6 +90,7 @@ builder.Services.AddRouting(o =>
 });
 builder.Services.Configure<ApiBehaviorOptions>(o =>
 {
+    o.ClientErrorMapping[StatusCodes.Status415UnsupportedMediaType] = new ClientErrorData();
     o.InvalidModelStateResponseFactory = actionContext =>
     {
         Dictionary<string, string[]> error = new();

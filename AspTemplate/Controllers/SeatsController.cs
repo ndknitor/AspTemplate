@@ -17,9 +17,12 @@ public class SeatsController(EtdbContext context) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PagingRequest request)
     {
-        int total = await context.Seat.Where(s => s.Deleted == false).CountAsync();
-        Console.WriteLine("dit me may");
-        IEnumerable<Seat> seats = context.Seat.Where(s => s.Deleted == false).OrderBy(s => s.SeatId).Skip((request.Page - 1) * request.Size).Take(request.Size);
+        int total = await context.Seat.Where(s => !s.Deleted).CountAsync();
+        IEnumerable<Seat> seats = context.Seat
+                                        .Where(s => !s.Deleted)
+                                        .OrderBy(s => s.Price)
+                                        .Skip((request.Page - 1) * request.Size)
+                                        .Take(request.Size);
         return Ok(new PagingResponse<Seat>
         {
             Size = request.Size,

@@ -22,4 +22,10 @@ public partial class Ticket
     public string From { get; set; }
 
     public string To { get; set; }
+
+    public virtual Seat Seat { get; set; }
+
+    public virtual Trip Trip { get; set; }
+
+    public virtual User User { get; set; }
 }

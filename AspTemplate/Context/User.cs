@@ -16,4 +16,6 @@ public partial class User
     public string Address { get; set; }
 
     public int RoleId { get; set; }
+
+    public virtual ICollection<Ticket> Ticket { get; set; } = new List<Ticket>();
 }

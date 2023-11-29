@@ -50,3 +50,16 @@ public class SeatsController(EtdbContext context) : ControllerBase
         });
     }
 }
+public class RSeat
+{
+    public int SeatId { get; set; }
+
+    public int BusId { get; set; }
+
+    public int Price { get; set; }
+
+    public string Name { get; set; }
+
+    public virtual Bus Bus { get; set; }
+
+}

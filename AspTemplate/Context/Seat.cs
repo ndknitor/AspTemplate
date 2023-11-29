@@ -16,4 +16,6 @@ public partial class Seat
     public string Name { get; set; }
 
     public virtual Bus Bus { get; set; }
+
+    public virtual ICollection<Ticket> Ticket { get; set; } = new List<Ticket>();
 }

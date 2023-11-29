@@ -14,4 +14,6 @@ public partial class Route
     public int BasePrice { get; set; }
 
     public bool Deleted { get; set; }
+
+    public virtual ICollection<Trip> Trip { get; set; } = new List<Trip>();
 }

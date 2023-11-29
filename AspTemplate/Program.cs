@@ -198,12 +198,7 @@ builder.Services.ServiceConfiguration();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-else
+if (app.Environment.IsProduction())
 {
     app.UseForwardedHeaders(new ForwardedHeadersOptions
     {
@@ -212,6 +207,11 @@ else
     app.UseHsts();
     app.UseHttpsRedirection();
     app.UseMiddleware<LoggingMiddleware>();
+}
+else
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseStaticFiles();
@@ -222,4 +222,4 @@ app.MapControllers();
 
 app.Run();
 
-//dotnet ef dbcontext scaffold "Data Source=127.0.0.1;TrustServerCertificate=True;Initial Catalog=etdb;User ID=sa;Password=QU3yYwn9Jirkk5FX7yi1uZeK06H6iR89OaV5QAbH0nmbqXsx"  Microsoft.EntityFrameworkCore.SqlServer -f --no-pluralize --no-onconfiguring -o Context
+//dotnet ef dbcontext scaffold "Data Source=127.0.0.1;TrustServerCertificate=True;Initial Catalog=etdb;User ID=sa;Password=password"  Microsoft.EntityFrameworkCore.SqlServer -f --no-pluralize --no-onconfiguring -o Context

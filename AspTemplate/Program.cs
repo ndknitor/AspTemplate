@@ -62,6 +62,14 @@ builder.WebHost.UseKestrel(option => option.AddServerHeader = false).ConfigureKe
     // }
 
     /////////////       Create pfx file command     ///////////////////////////
+    
+    /// Create self signed certificate
+    /// openssl req -x509 -nodes -newkey rsa:2048 -keyout private_key.pem -out certificate.pem -days 365
+    
+    /// Create csr
+    /// openssl req -new -newkey rsa:2048 -nodes -keyout private_key.pem -out certificate.csr
+
+    /// Convert pfx
     /// openssl pkcs12 -export -out certificate.pfx -inkey private-key.pem -in certificate.pem
     /// openssl pkcs12 -export -out certificate.pfx -inkey private-key.pem -in certificate.pem -passout pass:yourpassphrase
 
@@ -221,5 +229,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
-
 //dotnet ef dbcontext scaffold "Data Source=127.0.0.1;TrustServerCertificate=True;Initial Catalog=etdb;User ID=sa;Password=password"  Microsoft.EntityFrameworkCore.SqlServer -f --no-pluralize --no-onconfiguring -o Context

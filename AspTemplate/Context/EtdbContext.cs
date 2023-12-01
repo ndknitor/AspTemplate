@@ -27,18 +27,19 @@ public partial class EtdbContext : DbContext
     {
         modelBuilder.Entity<Bus>(entity =>
         {
-            entity.HasKey(e => e.BusId).HasName("PK__Bus__6A0F60B5D6D555C3");
+            entity.HasKey(e => e.BusId).HasName("PK__Bus__6A0F60B5C24B2982");
 
             entity.Property(e => e.BusId).ValueGeneratedNever();
             entity.Property(e => e.LicensePlate)
                 .IsRequired()
                 .HasMaxLength(16);
             entity.Property(e => e.Name).HasMaxLength(128);
+            entity.Property(e => e.SeatCount).HasComputedColumnSql("([dbo].[GetSeatCountForBus]([Bus].[BusId]))", false);
         });
 
         modelBuilder.Entity<Route>(entity =>
         {
-            entity.HasKey(e => e.RouteId).HasName("PK__Route__80979B4D479B8A2C");
+            entity.HasKey(e => e.RouteId).HasName("PK__Route__80979B4DE916D8E8");
 
             entity.Property(e => e.RouteId).ValueGeneratedNever();
             entity.Property(e => e.From)
@@ -53,7 +54,7 @@ public partial class EtdbContext : DbContext
 
         modelBuilder.Entity<Seat>(entity =>
         {
-            entity.HasKey(e => e.SeatId).HasName("PK__Seat__311713F3695CC58D");
+            entity.HasKey(e => e.SeatId).HasName("PK__Seat__311713F34647A744");
 
             entity.Property(e => e.SeatId).ValueGeneratedNever();
             entity.Property(e => e.Name)
@@ -68,7 +69,7 @@ public partial class EtdbContext : DbContext
 
         modelBuilder.Entity<Ticket>(entity =>
         {
-            entity.HasKey(e => e.TicketId).HasName("PK__Ticket__712CC60730C47389");
+            entity.HasKey(e => e.TicketId).HasName("PK__Ticket__712CC607C5CEE4B8");
 
             entity.Property(e => e.TicketId).ValueGeneratedNever();
             entity.Property(e => e.BookedDate).HasColumnType("datetime");
@@ -93,7 +94,7 @@ public partial class EtdbContext : DbContext
 
         modelBuilder.Entity<Trip>(entity =>
         {
-            entity.HasKey(e => e.TripId).HasName("PK__Trip__51DC713E918B759A");
+            entity.HasKey(e => e.TripId).HasName("PK__Trip__51DC713E2FEFF508");
 
             entity.Property(e => e.TripId).ValueGeneratedNever();
             entity.Property(e => e.EndDate).HasColumnType("datetime");
@@ -107,7 +108,7 @@ public partial class EtdbContext : DbContext
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4C096A5A0B");
+            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4C7443267B");
 
             entity.Property(e => e.UserId).ValueGeneratedNever();
             entity.Property(e => e.Address)

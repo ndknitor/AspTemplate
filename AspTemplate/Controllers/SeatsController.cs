@@ -9,21 +9,31 @@ namespace NewTemplate.Controllers;
 [Route("/api/[controller]")]
 public class SeatsController(EtdbContext context) : ControllerBase
 {
-    private static readonly Func<EtdbContext, IEnumerable<int>, IEnumerable<Seat>> GetSeatByIds = EF.CompileQuery
-    (
-        (EtdbContext context, IEnumerable<int> seatIds) =>
-        context.Seat.Where(s => seatIds.Contains(s.SeatId))
-    );
     [HttpGet]
     public async Task<IActionResult> Get([FromQuery] PagingRequest request)
     {
         int total = await context.Seat.Where(s => !s.Deleted).CountAsync();
-        IEnumerable<Seat> seats = context.Seat
+        Console.WriteLine("Dit me may");
+        context.Bus
+        .Include(b => b.Seat.Where(s => s.Price < 100));
+        IEnumerable<RSeat> seats = context.Seat
                                         .Where(s => !s.Deleted)
                                         .OrderBy(s => s.Price)
                                         .Skip((request.Page - 1) * request.Size)
-                                        .Take(request.Size);
-        return Ok(new PagingResponse<Seat>
+                                        .Take(request.Size)
+                                        .Select(s => new RSeat
+                                        {
+                                            SeatId = s.SeatId,
+                                            Name = s.Name,
+                                            Price = s.Price,
+                                            Bus = new Bus
+                                            {
+                                                Name = s.Bus.Name,
+                                                LicensePlate = s.Bus.LicensePlate,
+                                                Seat = null
+                                            },
+                                        });
+        return Ok(new PagingResponse<RSeat>
         {
             Size = request.Size,
             Data = seats,
@@ -49,12 +59,29 @@ public class SeatsController(EtdbContext context) : ControllerBase
             Message = "Get seats successfully"
         });
     }
+    private static readonly Func<EtdbContext, IEnumerable<int>, IEnumerable<Seat>> GetSeatByIds = EF.CompileQuery
+    (
+        (EtdbContext context, IEnumerable<int> seatIds) =>
+        context.Seat
+        .Where(s => seatIds.Contains(s.SeatId))
+        .AsSplitQuery()
+        .Select(s => new Seat
+        {
+            SeatId = s.SeatId,
+            Name = s.Name,
+            Price = s.Price,
+            Bus = new Bus
+            {
+                Name = s.Bus.Name,
+                LicensePlate = s.Bus.LicensePlate,
+                Seat = null
+            },
+        })
+    );
 }
 public class RSeat
 {
     public int SeatId { get; set; }
-
-    public int BusId { get; set; }
 
     public int Price { get; set; }
 

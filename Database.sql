@@ -2,6 +2,7 @@ create database Etdb
 go
 use Etdb;
 go
+
 CREATE TABLE [User](
     UserId int NOT NULL,
     Email nvarchar(128) NOT NULL,
@@ -66,6 +67,24 @@ CREATE TABLE Ticket(
 );;
 
 
+IF EXISTS (SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'Bus' AND COLUMN_NAME = 'SeatCount')
+BEGIN
+    ALTER TABLE Bus
+    DROP COLUMN SeatCount;
+END;
+go
+
+CREATE OR ALTER FUNCTION dbo.GetSeatCountForBus(@busId INT)
+RETURNS INT
+AS
+BEGIN
+    DECLARE @count INT;
+    SELECT @count = COUNT(*) FROM Seat WHERE BusId = @busId;
+    RETURN @count;
+END;
+
+GO
+ALTER TABLE Bus add SeatCount as dbo.GetSeatCountForBus(Bus.BusId);
 
 INSERT INTO Bus(BusId,[Name],LicensePlate,Deleted) VALUES('1','Sdasad','41A23435','false'),('2','Sdasad','43278322','false'),('3','Sdasad','23434322','false'),('4','Sdasad','23423234','false'),('5','Sdasad','23423423','false'),('7','Sdasad','34534532','false'),('10','Sdasad','34534534','false'),('11','Sdasad','23425464','false'),('12','Sdasad','34657432','false'),('13','Sdasad','43543434','false'),('14','From the nam','47A82783','false');
 

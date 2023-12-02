@@ -62,10 +62,10 @@ builder.WebHost.UseKestrel(option => option.AddServerHeader = false).ConfigureKe
     // }
 
     /////////////       Create pfx file command     ///////////////////////////
-    
+
     /// Create self signed certificate
     /// openssl req -x509 -nodes -newkey rsa:2048 -keyout private_key.pem -out certificate.pem -days 365
-    
+
     /// Create csr
     /// openssl req -new -newkey rsa:2048 -nodes -keyout private_key.pem -out certificate.csr
 

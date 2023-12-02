@@ -14,8 +14,6 @@ public class SeatsController(EtdbContext context) : ControllerBase
     {
         int total = await context.Seat.Where(s => !s.Deleted).CountAsync();
         Console.WriteLine("Dit me may");
-        context.Bus
-        .Include(b => b.Seat.Where(s => s.Price < 100));
         IEnumerable<RSeat> seats = context.Seat
                                         .Where(s => !s.Deleted)
                                         .OrderBy(s => s.Price)

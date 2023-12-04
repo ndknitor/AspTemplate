@@ -13,7 +13,6 @@ public class SeatsController(EtdbContext context) : ControllerBase
     public async Task<IActionResult> Get([FromQuery] PagingRequest request)
     {
         int total = await context.Seat.Where(s => !s.Deleted).CountAsync();
-        Console.WriteLine("Dit me may");
         IEnumerable<RSeat> seats = context.Seat
                                         .Where(s => !s.Deleted)
                                         .OrderBy(s => s.Price)

@@ -1,4 +1,3 @@
-using System.Net;
 using System.Text;
 using System.Text.Json.Serialization;
 using AspTemplate.Context;
@@ -124,12 +123,12 @@ builder.Services.AddAuthentication(options =>
 {
     options.Events.OnRedirectToAccessDenied = context =>
     {
-        context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
         return Task.CompletedTask;
     };
     options.Events.OnRedirectToLogin = context =>
     {
-        context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
         return Task.CompletedTask;
     };
     options.Cookie.Name = "cookie";
@@ -163,12 +162,12 @@ builder.Services.AddAuthentication(options =>
 // {
 //     options.Events.OnRedirectToAccessDenied = context =>
 //     {
-//         context.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+//         context.Response.StatusCode = StatusCodes.Status403Forbidden;
 //         return Task.CompletedTask;
 //     };
 //     options.Events.OnRedirectToLogin = context =>
 //     {
-//         context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+//         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
 //         return Task.CompletedTask;
 //     };
 //     options.Cookie.Name = "cookie";

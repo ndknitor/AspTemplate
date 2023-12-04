@@ -201,6 +201,7 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddDbContext<EtdbContext>(o => o.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
+//builder.Services.AddHostedService<PreloadHostedService>();
 builder.Services.ServiceConfiguration();
 
 var app = builder.Build();

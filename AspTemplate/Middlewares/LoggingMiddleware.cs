@@ -1,5 +1,3 @@
-using System.Net;
-
 public class LoggingMiddleware
 {
     private readonly RequestDelegate next;
@@ -12,7 +10,7 @@ public class LoggingMiddleware
     public async Task Invoke(HttpContext context)
     {
         context.Request.EnableBuffering();
-        string ip = context.Connection.RemoteIpAddress.ToString();//context.Request.Headers[MessageConstants.MIDDLE_WARE_CONFIG_IP].FirstOrDefault();
+        string ip = context.Connection.RemoteIpAddress.ToString(); //context.Request.Headers["CF-Connecting-IP"].FirstOrDefault();
         logger.LogInformation(@$"
 [REQUEST]
 💳 Connection Id : {context.Connection.Id}
@@ -64,7 +62,7 @@ public class LoggingMiddleware
                     "Not a JSON request";
             }
 
-            context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.Body.Close();
             var responseString =
 @$"

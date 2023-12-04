@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net;
 using System.Security.Claims;
 using AspTemplate.Context;
 using Microsoft.AspNetCore.Authorization;
@@ -19,6 +20,11 @@ namespace NewTemplate.Controllers
         {
             float a = 7.11f / 9.32f;
             return Ok(new { date = a.ToString("0.000000000000000000000000000000000") });
+        }
+        [HttpGet("hostname")]
+        public IActionResult GetHostname()
+        {
+            return Ok(Dns.GetHostName());
         }
     }
 }

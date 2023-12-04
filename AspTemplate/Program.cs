@@ -11,9 +11,9 @@ using Serilog;
 var builder = WebApplication.CreateBuilder(args);
 if (builder.Environment.IsProduction())
 {
-    builder.Logging.ClearProviders();
-    Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration.GetSection("Logging")).CreateLogger();
-    builder.Logging.AddSerilog(Log.Logger);
+    // builder.Logging.ClearProviders();
+    // Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration.GetSection("Logging")).CreateLogger();
+    // builder.Logging.AddSerilog(Log.Logger);
 }
 else
 {

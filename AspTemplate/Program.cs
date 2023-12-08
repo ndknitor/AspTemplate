@@ -1,8 +1,10 @@
+using System.Security.Principal;
 using System.Text;
 using System.Text.Json.Serialization;
 using AspTemplate.Context;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -87,6 +89,7 @@ builder.Services.AddCors(o =>
         policy
         .AllowAnyHeader()
         .AllowAnyMethod()
+        .AllowCredentials()
         .WithOrigins(builder.Configuration.GetSection("AllowedOrigins").Get<string[]>());
     });
 });
@@ -112,6 +115,10 @@ builder.Services.Configure<ApiBehaviorOptions>(o =>
     };
 });
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddSignalR(options =>
+{
+    options.AddFilter<SignalRExceptionFilter>();
+});
 
 int expireHours = int.Parse(builder.Configuration["AuthenticationExpireHours"]);
 #region Combine with JWT and Cookie
@@ -227,6 +234,7 @@ app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+app.MapHub<SignalRHub>("/signalr");
 
 app.Run();
 //dotnet ef dbcontext scaffold "Data Source=127.0.0.1;TrustServerCertificate=True;Initial Catalog=etdb;User ID=sa;Password=password"  Microsoft.EntityFrameworkCore.SqlServer -f --no-pluralize --no-onconfiguring -o Context

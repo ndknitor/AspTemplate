@@ -20,6 +20,7 @@ public class LoggingMiddleware
             await next(context);
             var responseString =
 @$"
+[HTTP RESPONSE]
 💳 Connection Id : {context.Connection.Id}
 👤 Client IP: {ip}
 🕵️ User-Agent: {context.Request.Headers["User-Agent"].FirstOrDefault()}
@@ -53,6 +54,7 @@ public class LoggingMiddleware
             context.Response.Body.Close();
             var responseString =
 @$"
+[HTTP RESPONSE ERROR]
 💳 Connection Id : {context.Connection.Id}
 👤 Client IP: {ip}
 🛣️ Path: {context.Request.Path}

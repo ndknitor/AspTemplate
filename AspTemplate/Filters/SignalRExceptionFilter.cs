@@ -19,13 +19,14 @@ public class SignalRExceptionFilter : IHubFilter
         }
         catch (Exception ex)
         {
+            string ip = invocationContext.Context.GetHttpContext().Connection.RemoteIpAddress.ToString(); //invocationContext.Context.GetHttpContext().Request.Headers["CF-Connecting-IP"].FirstOrDefault();
             _logger.LogError(@$"
 [SIGNALR ERROR]
-💳 Connection Id : {invocationContext.Context.ConnectionId}
+💳 Connection Id: {invocationContext.Context.ConnectionId}
 👤 Client IP: {invocationContext.Context.GetHttpContext().Connection.RemoteIpAddress}
 🤖 Method: {invocationContext.HubMethodName}
 ❗ Error: {ex.Message}
-🔴 Message : {JsonConvert.SerializeObject(invocationContext.HubMethodArguments)}");
+🔴 Message: {JsonConvert.SerializeObject(invocationContext.HubMethodArguments)}");
             throw;
         }
     }

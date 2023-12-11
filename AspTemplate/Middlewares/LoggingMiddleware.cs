@@ -9,37 +9,27 @@ public class LoggingMiddleware
     }
     public async Task Invoke(HttpContext context)
     {
-        if (context.Request.ContentType.Contains(System.Net.Mime.MediaTypeNames.Application.Json))
+        bool buffering = context.Request.ContentType != null && context.Request.ContentType.Contains(System.Net.Mime.MediaTypeNames.Application.Json);
+        string ip = context.Connection.RemoteIpAddress.ToString(); //context.Request.Headers["CF-Connecting-IP"].FirstOrDefault();
+        if (buffering)
         {
             context.Request.EnableBuffering();
         }
-        string ip = context.Connection.RemoteIpAddress.ToString(); //context.Request.Headers["CF-Connecting-IP"].FirstOrDefault();
-        logger.LogInformation(@$"
-[REQUEST]
+        try
+        {
+            await next(context);
+            var responseString =
+@$"
 💳 Connection Id : {context.Connection.Id}
 👤 Client IP: {ip}
 🕵️ User-Agent: {context.Request.Headers["User-Agent"].FirstOrDefault()}
 🛣️ Path: {context.Request.Path}
 🤖 Method: {context.Request.Method}
 🔍 Query: {context.Request.QueryString}
-📝 Content-Type: {context.Request.ContentType}
-");
-        try
-        {
-            await next(context);
-            var responseString =
-@$"
-[RESPONSE]
-💳 Connection Id : {context.Connection.Id}
-👤 Client IP: {ip}
-🛣️ Path: {context.Request.Path}
-🤖 Method: {context.Request.Method}
-🔍 Query: {context.Request.QueryString}
 🔢 Status Code: {context.Response.StatusCode}
-📝 Content-Type: {context.Response.ContentType}
 ";
             int statusCode = context.Response.StatusCode;
-            if (statusCode < 300)
+            if (statusCode < 400)
             {
                 logger.LogInformation(responseString);
             }
@@ -51,7 +41,7 @@ public class LoggingMiddleware
         catch (System.Exception e)
         {
             var requestBody = "Not a JSON request";
-            if (context.Request.ContentType.Contains(System.Net.Mime.MediaTypeNames.Application.Json))
+            if (buffering)
             {
                 using (var reader = new StreamReader(context.Request.Body, encoding: System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: 4096, leaveOpen: true))
                 {
@@ -59,20 +49,16 @@ public class LoggingMiddleware
                     requestBody = await reader.ReadToEndAsync();
                 }
             }
-
-
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.Body.Close();
             var responseString =
 @$"
-[RESPONSE]
 💳 Connection Id : {context.Connection.Id}
 👤 Client IP: {ip}
 🛣️ Path: {context.Request.Path}
 🤖 Method: {context.Request.Method}
 🔍 Query: {context.Request.QueryString}
 🔢 Status Code: {context.Response.StatusCode}
-📝 Content-Type: {context.Response.ContentType}
 ❗ Error: {e.Message}
 🔴 Request body : {requestBody}
 ";

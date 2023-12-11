@@ -221,13 +221,13 @@ if (app.Environment.IsProduction())
     });
     app.UseHsts();
     app.UseHttpsRedirection();
-    app.UseMiddleware<LoggingMiddleware>();
 }
 else
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseMiddleware<LoggingMiddleware>();
 
 app.UseStaticFiles();
 app.UseCors();

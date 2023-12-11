@@ -13,7 +13,5 @@ public partial class Bus
 
     public bool Deleted { get; set; }
 
-    public int? SeatCount { get; set; }
-
     public virtual ICollection<Seat> Seat { get; set; } = new List<Seat>();
 }

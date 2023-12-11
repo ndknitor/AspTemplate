@@ -27,19 +27,18 @@ public partial class EtdbContext : DbContext
     {
         modelBuilder.Entity<Bus>(entity =>
         {
-            entity.HasKey(e => e.BusId).HasName("PK__Bus__6A0F60B5C24B2982");
+            entity.HasKey(e => e.BusId).HasName("PK__Bus__6A0F60B57855F72B");
 
             entity.Property(e => e.BusId).ValueGeneratedNever();
             entity.Property(e => e.LicensePlate)
                 .IsRequired()
                 .HasMaxLength(16);
             entity.Property(e => e.Name).HasMaxLength(128);
-            entity.Property(e => e.SeatCount).HasComputedColumnSql("([dbo].[GetSeatCountForBus]([Bus].[BusId]))", false);
         });
 
         modelBuilder.Entity<Route>(entity =>
         {
-            entity.HasKey(e => e.RouteId).HasName("PK__Route__80979B4DE916D8E8");
+            entity.HasKey(e => e.RouteId).HasName("PK__Route__80979B4D4283D226");
 
             entity.Property(e => e.RouteId).ValueGeneratedNever();
             entity.Property(e => e.From)
@@ -54,7 +53,7 @@ public partial class EtdbContext : DbContext
 
         modelBuilder.Entity<Seat>(entity =>
         {
-            entity.HasKey(e => e.SeatId).HasName("PK__Seat__311713F34647A744");
+            entity.HasKey(e => e.SeatId).HasName("PK__Seat__311713F3B50CBDEE");
 
             entity.Property(e => e.SeatId).ValueGeneratedNever();
             entity.Property(e => e.Name)
@@ -64,12 +63,12 @@ public partial class EtdbContext : DbContext
             entity.HasOne(d => d.Bus).WithMany(p => p.Seat)
                 .HasForeignKey(d => d.BusId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Seat__BusId__48CFD27E");
+                .HasConstraintName("FK__Seat__BusId__4AB81AF0");
         });
 
         modelBuilder.Entity<Ticket>(entity =>
         {
-            entity.HasKey(e => e.TicketId).HasName("PK__Ticket__712CC607C5CEE4B8");
+            entity.HasKey(e => e.TicketId).HasName("PK__Ticket__712CC60766A37313");
 
             entity.Property(e => e.TicketId).ValueGeneratedNever();
             entity.Property(e => e.BookedDate).HasColumnType("datetime");
@@ -79,22 +78,22 @@ public partial class EtdbContext : DbContext
             entity.HasOne(d => d.Seat).WithMany(p => p.Ticket)
                 .HasForeignKey(d => d.SeatId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Ticket__SeatId__4E88ABD4");
+                .HasConstraintName("FK__Ticket__SeatId__5070F446");
 
             entity.HasOne(d => d.Trip).WithMany(p => p.Ticket)
                 .HasForeignKey(d => d.TripId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Ticket__TripId__4D94879B");
+                .HasConstraintName("FK__Ticket__TripId__4F7CD00D");
 
             entity.HasOne(d => d.User).WithMany(p => p.Ticket)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Ticket__UserId__4F7CD00D");
+                .HasConstraintName("FK__Ticket__UserId__5165187F");
         });
 
         modelBuilder.Entity<Trip>(entity =>
         {
-            entity.HasKey(e => e.TripId).HasName("PK__Trip__51DC713E2FEFF508");
+            entity.HasKey(e => e.TripId).HasName("PK__Trip__51DC713EBA3E0D21");
 
             entity.Property(e => e.TripId).ValueGeneratedNever();
             entity.Property(e => e.EndDate).HasColumnType("datetime");
@@ -103,12 +102,12 @@ public partial class EtdbContext : DbContext
             entity.HasOne(d => d.Route).WithMany(p => p.Trip)
                 .HasForeignKey(d => d.RouteId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Trip__RouteId__440B1D61");
+                .HasConstraintName("FK__Trip__RouteId__45F365D3");
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4C7443267B");
+            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4C9F281741");
 
             entity.Property(e => e.UserId).ValueGeneratedNever();
             entity.Property(e => e.Address)

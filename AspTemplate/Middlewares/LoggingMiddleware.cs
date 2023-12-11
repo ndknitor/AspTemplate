@@ -9,7 +9,10 @@ public class LoggingMiddleware
     }
     public async Task Invoke(HttpContext context)
     {
-        context.Request.EnableBuffering();
+        if (context.Request.ContentType.Contains(System.Net.Mime.MediaTypeNames.Application.Json))
+        {
+            context.Request.EnableBuffering();
+        }
         string ip = context.Connection.RemoteIpAddress.ToString(); //context.Request.Headers["CF-Connecting-IP"].FirstOrDefault();
         logger.LogInformation(@$"
 [REQUEST]
@@ -47,20 +50,16 @@ public class LoggingMiddleware
         }
         catch (System.Exception e)
         {
-            var requestBody = "";
-            using (var reader = new StreamReader(
-       context.Request.Body,
-       encoding: System.Text.Encoding.UTF8,
-       detectEncodingFromByteOrderMarks: false,
-       bufferSize: 4096,
-       leaveOpen: true))
+            var requestBody = "Not a JSON request";
+            if (context.Request.ContentType.Contains(System.Net.Mime.MediaTypeNames.Application.Json))
             {
-                reader.BaseStream.Seek(0, SeekOrigin.Begin);
-                requestBody = context.Request.ContentType == System.Net.Mime.MediaTypeNames.Application.Json ?
-                    await reader.ReadToEndAsync() 
-                    : 
-                    "Not a JSON request";
+                using (var reader = new StreamReader(context.Request.Body, encoding: System.Text.Encoding.UTF8, detectEncodingFromByteOrderMarks: false, bufferSize: 4096, leaveOpen: true))
+                {
+                    reader.BaseStream.Seek(0, SeekOrigin.Begin);
+                    requestBody = await reader.ReadToEndAsync();
+                }
             }
+
 
             context.Response.StatusCode = StatusCodes.Status500InternalServerError;
             context.Response.Body.Close();

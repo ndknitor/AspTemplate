@@ -62,7 +62,7 @@ public class LoggingMiddleware
 🔍 Query: {context.Request.QueryString}
 🔢 Status Code: {context.Response.StatusCode}
 ❗ Error: {e.Message}
-🔴 Request body : {requestBody}
+🔴 Request body: {requestBody}
 ";
             logger.LogError(responseString);
         }

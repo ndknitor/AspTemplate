@@ -1,10 +1,8 @@
-# Base image
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 COPY . ./
 RUN dotnet restore
 RUN dotnet publish -c Release -o out
-# Final image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
 WORKDIR /app
 RUN apk update
@@ -14,8 +12,6 @@ COPY --from=build /app/out .
 USER nobody
 ENTRYPOINT ["dotnet", "AspTemplate.dll"]
 
-# RUN chown -R www-data /app
-# USER www-data:www-data
 # build the image
 # docker build -t asp-template .
 

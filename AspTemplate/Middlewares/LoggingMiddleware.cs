@@ -21,7 +21,7 @@ public class LoggingMiddleware
             var responseString =
 @$"
 [HTTP RESPONSE]
-💳 Connection Id : {context.Connection.Id}
+💳 Connection Id: {context.Connection.Id}
 👤 Client IP: {ip}
 🕵️ User-Agent: {context.Request.Headers["User-Agent"].FirstOrDefault()}
 🛣️ Path: {context.Request.Path}

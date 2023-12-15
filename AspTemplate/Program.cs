@@ -10,7 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder();//CreateEmptyBuilder(new WebApplicationOptions { Args = args, ApplicationName = "AspTemplate", WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), ContentRootPath = Directory.GetCurrentDirectory(), EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") });
 if (builder.Environment.IsProduction())
 {
     // builder.Logging.ClearProviders();

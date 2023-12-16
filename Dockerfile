@@ -15,7 +15,10 @@ ENTRYPOINT ["dotnet", "AspTemplate.dll"]
 # build the image
 # docker build -t asp-template .
 
-# run the image
+# Run the image
 # mkdir -p $(pwd)/wwwroot && sudo chown -R nobody $(pwd)/wwwroot
 # mkdir -p $(pwd)/logs && sudo chown -R nobody $(pwd)/logs
 # docker run -d -p 5000:8080 -v $(pwd)/wwwroot:/app/wwwroot -v $(pwd)/logs:/app/logs asp-template
+
+# Run image with host user
+# docker run -d -p 5000:8080 -v $(pwd)/wwwroot:/app/wwwroot -v $(pwd)/logs:/app/logs -u $(id -u ${USER}):$(id -g ${USER}) asp-template

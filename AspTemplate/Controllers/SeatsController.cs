@@ -15,7 +15,7 @@ public class SeatsController(EtdbContext context, IMapper mapper) : ControllerBa
         var seats = context.Seat
                             .Where(s => !s.Deleted)
                             .OrderBy(s => s.Price)
-                            .Skip((request.Page - 1) * request.Size)
+                            .Skip(request.Offset)
                             .Take(request.Size)
                             .Select(mapper.Map<RSeat>);
         return Ok(new PagingResponse<RSeat>

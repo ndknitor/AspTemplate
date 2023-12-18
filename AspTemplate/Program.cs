@@ -149,7 +149,7 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = true,
         ValidAudience = builder.Configuration["JwtProvider:Audience"],
         ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JwtProvider:SecretKey"])),
+        IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(builder.Configuration["JwtProvider:SecretKey"])),
         ValidateLifetime = true
     };
 }).AddPolicyScheme("JWT_OR_COOKIE", "JWT_OR_COOKIE", options =>
@@ -195,7 +195,7 @@ builder.Services.AddAuthentication(options =>
 //         ValidIssuer = builder.Configuration["JwtProvider:Issuer"],
 //         ValidAudience = builder.Configuration["JwtProvider:Audience"],
 //         IssuerSigningKey = new SymmetricSecurityKey
-//         (Encoding.UTF8.GetBytes(builder.Configuration["JwtProvider:Key"])),
+//         (Convert.FromBase64String(builder.Configuration["JwtProvider:Key"])),
 //         ValidateIssuer = true,
 //         ValidateAudience = true,
 //         ValidateLifetime = true,

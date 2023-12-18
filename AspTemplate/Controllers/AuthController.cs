@@ -125,7 +125,7 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
     }
     private string GetJwt(IEnumerable<Claim> claims)
     {
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtProvider:SecretKey"]));
+        var securityKey = new SymmetricSecurityKey(Convert.FromBase64String(configuration["JwtProvider:SecretKey"]));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
         var token = new JwtSecurityToken(
         configuration["JwtProvider:Issuer"],

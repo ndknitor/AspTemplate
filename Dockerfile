@@ -12,7 +12,7 @@ COPY --from=build /app/out .
 USER nobody
 ENTRYPOINT ["dotnet", "AspTemplate.dll"]
 
-# build the image
+# Build the image
 # docker build -t asp-template .
 
 # Run the image

@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using AspTemplate.Context;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +15,7 @@ public class SeatsController(EtdbContext context, IMapper mapper) : ControllerBa
         var total = await context.Seat.Where(s => !s.Deleted).CountAsync();
         var seats = context.Seat
                             .Where(s => !s.Deleted)
-                            .OrderBy(s => s.Price)
+                            .OrderBy(s => s.SeatId)
                             .Skip(request.Offset)
                             .Take(request.Size)
                             .Select(mapper.Map<RSeat>);

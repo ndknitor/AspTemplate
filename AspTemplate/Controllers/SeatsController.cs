@@ -47,6 +47,23 @@ public class SeatsController(EtdbContext context, IMapper mapper) : ControllerBa
         });
     }
 
+    [HttpPost]
+    public async Task<IActionResult> Insert([FromBody][Required][MaxLength(128)] IEnumerable<CSeat> request)
+    {
+        IEnumerable<Seat> iSeats = mapper.Map<IEnumerable<Seat>>(request);
+        int offsetId = context.Seat.Max(s => s.SeatId) + 1;
+        foreach (var item in iSeats)
+        {
+            item.SeatId = offsetId++;
+        }
+        await context.Seat.AddRangeAsync(iSeats);
+        await context.SaveChangesAsync();
+        return Ok(new RangeResponse<RSeat>
+        {
+            Data = mapper.Map<IEnumerable<RSeat>>(iSeats),
+            Message = "Insert seat successfully"
+        });
+    }
     private static readonly Func<EtdbContext, IEnumerable<int>, IEnumerable<Seat>> GetSeatByIds = EF.CompileQuery
     (
         (EtdbContext context, IEnumerable<int> seatIds) =>
@@ -69,5 +86,20 @@ public class RSeat
     public string Name { get; set; }
 
     public virtual Bus Bus { get; set; }
+}
 
+public class CSeat
+{
+    [Required]
+    public int Price { get; set; }
+    [Required]
+    [MaxLength(128)]
+    public string Name { get; set; }
+    [Required]
+    public int BusId { get; set; }
+}
+public class USeat : CSeat
+{
+    [Required]
+    public int SeatId { get; set; }
 }

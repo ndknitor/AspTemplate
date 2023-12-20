@@ -8,5 +8,6 @@ public class MapperProfile : Profile
     public MapperProfile()
     {
         CreateMap<Seat, RSeat>();
+        CreateMap<CSeat, Seat>();
     }
 }

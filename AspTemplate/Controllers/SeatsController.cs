@@ -50,18 +50,47 @@ public class SeatsController(EtdbContext context, IMapper mapper) : ControllerBa
     [HttpPost]
     public async Task<IActionResult> Insert([FromBody][Required][MaxLength(128)] IEnumerable<CSeat> request)
     {
-        IEnumerable<Seat> iSeats = mapper.Map<IEnumerable<Seat>>(request);
-        int offsetId = context.Seat.Max(s => s.SeatId) + 1;
-        foreach (var item in iSeats)
+        IEnumerable<Seat> seats = mapper.Map<IEnumerable<Seat>>(request);
+
+        using (var transation = context.Database.BeginTransaction())
         {
-            item.SeatId = offsetId++;
+            int offsetId = context.Seat.Max(s => s.SeatId) + 1;
+            foreach (var item in seats)
+            {
+                item.SeatId = offsetId++;
+            }
+            await context.Seat.AddRangeAsync(seats);
+            await context.SaveChangesAsync();
+            await transation.CommitAsync();
         }
-        await context.Seat.AddRangeAsync(iSeats);
+
+        return Ok(new RangeResponse<RSeat>
+        {
+            Data = mapper.Map<IEnumerable<RSeat>>(seats),
+            Message = "Insert seats successfully"
+        });
+    }
+    [HttpPut]
+    public async Task<IActionResult> Update([FromBody][Required][MaxLength(128)] IEnumerable<USeat> request)
+    {
+        IEnumerable<Seat> seats = mapper.Map<IEnumerable<Seat>>(request);
+        context.Seat.UpdateRange(seats);
         await context.SaveChangesAsync();
         return Ok(new RangeResponse<RSeat>
         {
-            Data = mapper.Map<IEnumerable<RSeat>>(iSeats),
-            Message = "Insert seat successfully"
+            Data = mapper.Map<IEnumerable<RSeat>>(seats),
+            Message = "Update seats successfully"
+        });
+    }
+    [HttpDelete]
+    public async Task<IActionResult> Delete([FromBody][Required][MaxLength(128)] IEnumerable<int> seatIds)
+    {
+        await context.Seat.Where(s => seatIds.Contains(s.SeatId)).ExecuteDeleteAsync();
+        int success = await context.SaveChangesAsync();
+        return Ok(new SingleResponse<int>
+        {
+            Data = success,
+            Message = "Delete seats successfully"
         });
     }
     private static readonly Func<EtdbContext, IEnumerable<int>, IEnumerable<Seat>> GetSeatByIds = EF.CompileQuery

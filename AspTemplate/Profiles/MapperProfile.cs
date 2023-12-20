@@ -9,5 +9,6 @@ public class MapperProfile : Profile
     {
         CreateMap<Seat, RSeat>();
         CreateMap<CSeat, Seat>();
+        CreateMap<USeat, Seat>();
     }
 }

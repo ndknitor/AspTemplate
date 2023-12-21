@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Reflection.Emit;
 using AspTemplate.Context;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
@@ -74,6 +75,31 @@ public class SeatsController(EtdbContext context, IMapper mapper) : ControllerBa
     public async Task<IActionResult> Update([FromBody][Required][MaxLength(128)] IEnumerable<USeat> request)
     {
         IEnumerable<Seat> seats = mapper.Map<IEnumerable<Seat>>(request);
+
+        //var notFoundBusId = seats.Select(s => s.BusId).Distinct().Except(context.Bus.Where(b => seats.Select(s => s.BusId).Distinct().Contains(b.BusId)).Select(b => b.BusId).AsEnumerable());
+
+        var requestSeatIds = seats.Select(s => s.SeatId).Distinct();
+        var foundSeatIds = context.Seat.Where(b => requestSeatIds.Contains(b.SeatId)).Select(b => b.SeatId).AsEnumerable();
+        if (requestSeatIds.Count() > foundSeatIds.Count())
+        {
+            return BadRequest(new RangeResponse<int>
+            {
+                Data = requestSeatIds.Except(foundSeatIds),
+                Message = "Some Seat ID(s) not found"
+            });
+        }
+
+        var requestBusIds = seats.Select(s => s.BusId).Distinct();
+        var foundBusIds = context.Bus.Where(b => requestBusIds.Contains(b.BusId)).Select(b => b.BusId).AsEnumerable();
+        if (requestBusIds.Count() > foundBusIds.Count())
+        {
+            return BadRequest(new RangeResponse<int>
+            {
+                Data = requestBusIds.Except(foundBusIds),
+                Message = "Some Bus ID(s) not found"
+            });
+        }
+
         context.Seat.UpdateRange(seats);
         await context.SaveChangesAsync();
         return Ok(new RangeResponse<RSeat>

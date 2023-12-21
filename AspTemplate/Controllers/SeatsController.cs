@@ -28,11 +28,11 @@ public class SeatsController(EtdbContext context, IMapper mapper) : ControllerBa
         });
     }
     [HttpGet("range")]
-    public IActionResult GetByIds([FromQuery] IEnumerable<int> seatIds)
+    public IActionResult GetByIds([FromQuery] IEnumerable<int> seatId, [FromQuery] IEnumerable<string> name)
     {
-        return Ok(new RangeResponse<Seat>
+        return Ok(new RangeResponse<RSeat>
         {
-            Data = GetSeatByIds(context, seatIds),
+            Data = mapper.Map<IEnumerable<RSeat>>(GetRange(context, seatId, name)),
             Message = "Get seat range"
         });
     }
@@ -42,7 +42,7 @@ public class SeatsController(EtdbContext context, IMapper mapper) : ControllerBa
         int a = int.Parse("a");
         return Ok(new RangeResponse<Seat>
         {
-            Data = GetSeatByIds(context, seatIds),
+            Data = null,
             Message = "Get seats successfully"
         });
     }
@@ -93,17 +93,11 @@ public class SeatsController(EtdbContext context, IMapper mapper) : ControllerBa
             Message = "Delete seats successfully"
         });
     }
-    private static readonly Func<EtdbContext, IEnumerable<int>, IEnumerable<Seat>> GetSeatByIds = EF.CompileQuery
+    private static readonly Func<EtdbContext, IEnumerable<int>, IEnumerable<string>, IEnumerable<Seat>> GetRange = EF.CompileQuery
     (
-        (EtdbContext context, IEnumerable<int> seatIds) =>
+        (EtdbContext context, IEnumerable<int> seatIds, IEnumerable<string> names) =>
         context.Seat
-        .Where(s => seatIds.Contains(s.SeatId))
-        .Select(s => new Seat
-        {
-            SeatId = s.SeatId,
-            Name = s.Name,
-            Price = s.Price
-        })
+        .Where(s => seatIds.Contains(s.SeatId) || names.Contains(s.Name))
     );
 }
 public class RSeat

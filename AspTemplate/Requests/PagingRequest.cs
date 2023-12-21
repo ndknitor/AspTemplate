@@ -11,5 +11,5 @@ public class PagingRequest
     [Range(1, 256)]
     public int Size { get; set; } = 50;
     [SwaggerExclude]
-    public int Offset { get { return (Page - 1) * Size; } }
+    public int Offset { get => (Page - 1) * Size; }
 }

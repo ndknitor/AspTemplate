@@ -20,7 +20,7 @@ public class SeatsController(EtdbContext context, IMapper mapper) : ControllerBa
                             .Skip(request.Offset)
                             .Take(request.Size)
                             .Select(mapper.Map<RSeat>);
-        return Ok(new PagingResponse<RSeat>
+        return Ok(new OffsetPagingResponse<RSeat>
         {
             Size = request.Size,
             Data = seats,

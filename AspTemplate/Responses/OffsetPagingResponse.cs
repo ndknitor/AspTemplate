@@ -1,4 +1,4 @@
-public class PagingResponse<T> : RangeResponse<T>
+public class OffsetPagingResponse<T> : RangeResponse<T>
 {
     public required int Size;
     public required int Total { get; set; }

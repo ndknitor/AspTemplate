@@ -11,7 +11,7 @@ namespace NewTemplate.Controllers;
 public class SeatsController(EtdbContext context, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> Get([FromQuery] PagingRequest request)
+    public async Task<IActionResult> Get([FromQuery] OffsetPagingRequest request)
     {
         var total = await context.Seat.Where(s => !s.Deleted).CountAsync();
         var seats = context.Seat

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-public class PagingRequest
+public class OffsetPagingRequest
 {
     [MaxLength(48)]
     public IEnumerable<bool> Desc { get; set; }

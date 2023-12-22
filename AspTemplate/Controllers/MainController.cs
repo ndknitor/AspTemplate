@@ -11,7 +11,7 @@ namespace NewTemplate.Controllers
     public class MainController : ControllerBase
     {
         [HttpGet]
-        public IActionResult GetPage([FromQuery] PagingRequest request)
+        public IActionResult GetPage([FromQuery] OffsetPagingRequest request)
         {
             return Ok(Enumerable.Range((request.Page - 1) * request.Size, request.Size));
         }
@@ -20,6 +20,11 @@ namespace NewTemplate.Controllers
         {
             float a = 7.11f / 9.32f;
             return Ok(new { date = a.ToString("0.000000000000000000000000000000000") });
+        }
+        [HttpGet("date")]
+        public IActionResult GetDate()
+        {
+            return Ok(new { date = DateTime.Now });
         }
         [HttpGet("hostname")]
         public IActionResult GetHostname()

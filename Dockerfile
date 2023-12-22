@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 COPY . ./
 RUN dotnet restore
-RUN dotnet publish -c Release -o out
+RUN dotnet publish -r linux-musl-x64 -o out
 FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
 WORKDIR /app
 RUN apk update

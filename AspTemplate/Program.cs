@@ -50,9 +50,10 @@ else
 
 builder.WebHost.UseKestrel(option => option.AddServerHeader = false).ConfigureKestrel((context, option) =>
 {
+    option.Limits.MaxRequestLineSize = 1024;
     // option.Limits.MaxConcurrentConnections = 1;
     // option.Limits.MaxConcurrentUpgradedConnections = 1;
-    //option.Limits.MaxResponseBufferSize = 1;
+    // option.Limits.MaxResponseBufferSize = 1;
     // if (context.HostingEnvironment.IsProduction())
     // {
     //     option.ConfigureHttpsDefaults(o =>

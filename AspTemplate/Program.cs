@@ -121,6 +121,8 @@ builder.Services.AddSignalR(options =>
     options.AddFilter<SignalRExceptionFilter>();
 });
 
+builder.Services.Configure<ExampleOption>(builder.Configuration.GetSection("Example"));
+
 int expireHours = int.Parse(builder.Configuration["AuthenticationExpireHours"]);
 #region Combine with JWT and Cookie
 builder.Services.AddAuthentication(options =>

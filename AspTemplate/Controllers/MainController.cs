@@ -4,6 +4,7 @@ using System.Security.Claims;
 using AspTemplate.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 namespace NewTemplate.Controllers
 {
     [ApiController]
@@ -20,6 +21,11 @@ namespace NewTemplate.Controllers
         {
             float a = 7.11f / 9.32f;
             return Ok(new { date = a.ToString("0.000000000000000000000000000000000") });
+        }
+        [HttpGet("option")]
+        public IActionResult Get([FromServices] IOptions<ExampleOption> option)
+        {
+            return Ok(new { value = option.Value.ExampleValue });
         }
         [HttpGet("date")]
         public IActionResult GetDate()

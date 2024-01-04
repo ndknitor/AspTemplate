@@ -50,7 +50,9 @@ else
 
 builder.WebHost.UseKestrel(option => option.AddServerHeader = false).ConfigureKestrel((context, option) =>
 {
+    // Limit request query
     option.Limits.MaxRequestLineSize = 1024;
+
     // option.Limits.MaxConcurrentConnections = 1;
     // option.Limits.MaxConcurrentUpgradedConnections = 1;
     // option.Limits.MaxResponseBufferSize = 1;
@@ -120,7 +122,6 @@ builder.Services.AddSignalR(options =>
 {
     options.AddFilter<SignalRExceptionFilter>();
 });
-
 int expireHours = int.Parse(builder.Configuration["AuthenticationExpireHours"]);
 #region Combine with JWT and Cookie
 builder.Services.AddAuthentication(options =>

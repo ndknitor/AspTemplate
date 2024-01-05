@@ -143,7 +143,7 @@ builder.Services.AddAuthentication(options =>
         context.Response.StatusCode = StatusCodes.Status401Unauthorized;
         return Task.CompletedTask;
     };
-    options.Cookie.Name = "cookie";
+    options.Cookie.Name = "auth";
     options.ExpireTimeSpan = TimeSpan.FromHours(expireHours);
 }).AddJwtBearer("Bearer", options =>
 {

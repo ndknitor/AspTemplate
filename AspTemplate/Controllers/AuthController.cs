@@ -68,6 +68,13 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
     [HttpPost("login/cookie")]
     public async Task<IActionResult> LoginCookie()
     {
+        if (HaveAuthorizationHeader())
+        {
+            return BadRequest(new StandardResponse
+            {
+                Message = "Authorization headers are not allowed"
+            });
+        }
         var claims = new[] {
             new Claim(ClaimTypes.NameIdentifier, "1"),
             new Claim(ClaimTypes.Role, "User")
@@ -122,6 +129,11 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
     public IActionResult Test([FromBody] SignInRequest request)
     {
         return Ok();
+    }
+    private bool HaveAuthorizationHeader()
+    {
+        string authorization = accessor.HttpContext.Request.Headers["Authorization"];
+        return !string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer ");
     }
     private string GetJwt(IEnumerable<Claim> claims)
     {

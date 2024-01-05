@@ -44,6 +44,7 @@ else
                 new string[] { }
             }
         });
+           c.EnableAnnotations();
     });
     builder.Services.AddEndpointsApiExplorer();
 }

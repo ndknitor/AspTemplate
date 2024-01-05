@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace NewTemplate.Controllers;
 [ApiController]
@@ -14,6 +15,7 @@ namespace NewTemplate.Controllers;
 public class AuthController(IHttpContextAccessor accessor, IConfiguration configuration, IWebHostEnvironment environment) : ControllerBase
 {
     [HttpGet("debug/cookie/{id:long}")]
+    [SwaggerOperation($"Roles: {nameof(Role.Public)}")]
     public async Task<IActionResult> DebugCookie([FromRoute] long id)
     {
         if (environment.IsProduction())
@@ -31,6 +33,7 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
         });
     }
     [HttpGet("debug/jwt/{id:long}")]
+    [SwaggerOperation($"Roles: {nameof(Role.Public)}")]
     public IActionResult DebugJwt([FromRoute] long id)
     {
         if (environment.IsProduction())
@@ -48,6 +51,7 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
         });
     }
     [HttpGet("logout")]
+    [SwaggerOperation($"Roles: {nameof(Role.Authorized)}")]
     [Authorize]
     public async Task<IActionResult> Logout()
     {
@@ -66,6 +70,7 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
         }
     }
     [HttpPost("login/cookie")]
+    [SwaggerOperation($"Roles: {nameof(Role.Unauthorized)}")]
     public async Task<IActionResult> LoginCookie()
     {
         if (HaveAuthorizationHeader())
@@ -86,6 +91,7 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
         });
     }
     [HttpPost("login/jwt")]
+    [SwaggerOperation($"Roles: {nameof(Role.Unauthorized)}")]
     public IActionResult LoginJwt()
     {
         var claims = new[] {
@@ -99,6 +105,7 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
         });
     }
     [HttpGet("refresh")]
+    [SwaggerOperation($"Roles: {nameof(Role.Authorized)}")]
     [Authorize]
     public async Task<IActionResult> Refresh()
     {
@@ -120,12 +127,14 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
         }
     }
     [HttpGet("authorize")]
+    [SwaggerOperation($"Roles: {nameof(Role.Authorized)}")]
     [Authorize]
     public IActionResult GetAuth()
     {
         return Ok(accessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
     }
     [HttpPost("test")]
+    [SwaggerOperation($"Roles: {nameof(Role.Public)}")]
     public IActionResult Test([FromBody] SignInRequest request)
     {
         return Ok();

@@ -22,14 +22,23 @@ pipeline {
         //         sh 'dotnet run --project JenkinsImpact'
         //     }
         // }
-        // stage('Deploy development') {
-        //     when {
-        //         expression { params.CD == "Development" }
-        //     }
-        //     steps {
-        //         echo 'Deploy development'
-        //     }
-        // }
+        stage('Deploy development') {
+            when {
+                expression { params.CD == "Development" }
+            }
+            steps {
+                sshagent(credentials: ['ssh_credential']) {
+                    sh
+                    '''
+                        ssh vagrant@192.168.56.82 -i id_rsa \
+                        "cd AspTemplate; \ 
+                        git pull; \
+                        docker build -t asp-template .; \
+                        docker run -d -p --rm 5000:8080 asp-template"
+                    '''
+                }
+            }
+        }
         // stage('Deploy staging') {
         //     when {
         //         expression { params.CD == "Staging" }

@@ -9,7 +9,7 @@ using Swashbuckle.AspNetCore.Annotations;
 namespace NewTemplate.Controllers;
 [ApiController]
 [Route("/api/admin/seats")]
-[Authorize(Roles = $"{nameof(Role.Admin)}")]
+[Authorize(Roles = nameof(Role.Admin))]
 public class AdminSeatsController(EtdbContext context, IMapper mapper) : ControllerBase
 {
     [HttpPost]

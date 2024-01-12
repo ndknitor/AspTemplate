@@ -45,6 +45,6 @@ public class MainController : ControllerBase
     [HttpGet("environment")]
     public IActionResult GetEnvironment([FromServices] IWebHostEnvironment environment)
     {
-        return Ok(new { environment = environment, update = 2 });
+        return Ok(new { environment = environment, update = 3 });
     }
 }

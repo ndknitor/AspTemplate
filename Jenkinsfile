@@ -1,3 +1,5 @@
+// Generic Webhook Trigger Plugin
+// SSH Agent Plugin
 pipeline {
     agent any
     stages {

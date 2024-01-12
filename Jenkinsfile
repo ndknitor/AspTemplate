@@ -27,7 +27,6 @@ pipeline {
                 expression { params.CD == "Development" }
             }
             steps {
-                sshagent(credentials: ['ssh_credential']) {
                     sh
                     '''
                         ssh vagrant@192.168.56.82 -i id_rsa \
@@ -37,7 +36,6 @@ pipeline {
                         docker stop asp-template; \
                         docker run --name asp-template --rm -d -p 5000:8080 asp-template"
                     '''
-                }
             }
         }
         // stage('Deploy staging') {

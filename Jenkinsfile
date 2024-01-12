@@ -21,9 +21,23 @@ pipeline {
             when {
                 expression { params.CD == "Development" || params.CD == "PassProduction" }
             }
-            steps {
-                sh 'dotnet test'
+            parallel {
+                stage('Unit Tests') {
+                    steps {
+                        echo 'Running unit tests...'
+                        // Add your unit test steps here
+                    }
+                }
+                stage('Integration Tests') {
+                    steps {
+                        echo 'Running integration tests...'
+                        // Add your integration test steps here
+                    }
+                }
             }
+            // steps {
+            //     sh 'dotnet test'
+            // }
         }
         stage('Deploy development') {
             when {

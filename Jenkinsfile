@@ -34,7 +34,8 @@ pipeline {
                         "cd AspTemplate; \ 
                         git pull; \
                         docker build -t asp-template .; \
-                        docker run -d -p --rm 5000:8080 asp-template"
+                        docker stop asp-template; \
+                        docker run --name asp-template --rm -d -p 5000:8080 asp-template"
                     '''
                 }
             }

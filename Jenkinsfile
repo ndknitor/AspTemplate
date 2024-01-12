@@ -35,7 +35,8 @@ pipeline {
                         git pull &&
                         docker build -t debian3:5000/asp-template:dev . &&
                         docker stop asp-template &&
-                        docker run --name asp-template -e ASPNETCORE_ENVIRONMENT="Development" --restart=always --rm -d -p 8080:8080 debian3:5000/asp-template:dev &&
+                        docker rm asp-template &&
+                        docker run --name asp-template -e ASPNETCORE_ENVIRONMENT="Development" --restart=always -d -p 8080:8080 debian3:5000/asp-template:dev &&
                         docker push debian3:5000/asp-template:dev
                         docker image prune -f"
                     '''
@@ -54,7 +55,8 @@ pipeline {
                         "docker pull debian3:5000/asp-template:dev &&
                         docker tag debian3:5000/asp-template:dev debian3:5000/asp-template &&
                         docker stop asp-template &&
-                        docker run --name asp-template -e ASPNETCORE_ENVIRONMENT="Staging" --restart=always --rm -d -p 8080:8080 debian3:5000/asp-template &&
+                        docker rm asp-template &&
+                        docker run --name asp-template -e ASPNETCORE_ENVIRONMENT="Staging" --restart=always -d -p 8080:8080 debian3:5000/asp-template &&
                         docker push debian3:5000/asp-template &&
                         docker image prune -f"
                     '''

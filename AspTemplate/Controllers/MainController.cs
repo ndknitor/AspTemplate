@@ -42,4 +42,9 @@ public class MainController : ControllerBase
     {
         return Ok(Dns.GetHostName());
     }
+    [HttpGet("environment")]
+    public IActionResult GetEnvironment([FromServices] IWebHostEnvironment environment)
+    {
+        return Ok(new { environment = environment });
+    }
 }

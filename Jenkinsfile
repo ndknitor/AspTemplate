@@ -27,15 +27,17 @@ pipeline {
                 expression { params.CD == "Development" }
             }
             steps {
-                    sh
+                sshagent(credentials: ['ssh_credential']) {
+                    sh '''
+                        ssh vagrant@192.168.56.82 \
+                        "cd AspTemplate &&
+                        git pull &&
+                        docker build -t asp-template . &&
+                        docker stop asp-template &&
+                        docker run --name asp-template --rm -d -p 5000:8080 asp-template &&
+                        docker image prune -f"
                     '''
-                        ssh vagrant@192.168.56.82 -i id_rsa \
-                        "cd AspTemplate; \ 
-                        git pull; \
-                        docker build -t asp-template .; \
-                        docker stop asp-template; \
-                        docker run --name asp-template --rm -d -p 5000:8080 asp-template"
-                    '''
+                }
             }
         }
         // stage('Deploy staging') {

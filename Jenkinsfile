@@ -41,18 +41,18 @@ pipeline {
         }
         stage('Deploy development') {
             when {
-                expression { params.CD == "Development" || params.CD == "PassProduction" }
+                expression { params.CD == "Development" }
             }
             steps {
                 sshagent(['ssh-remote']) {
                     sh '''
                         ssh vagrant@192.168.56.82 \
-                        "cd AspTemplate &&
-                        git pull &&
-                        docker build -t debian3:5000/asp-template:dev . &&
-                        docker stop asp-template &&
-                        docker rm asp-template &&
-                        docker run --name asp-template -e ASPNETCORE_ENVIRONMENT="Development" --restart=always -d -p 8080:8080 debian3:5000/asp-template:dev &&
+                        "cd AspTemplate 
+                        git pull 
+                        docker build -t debian3:5000/asp-template:dev . 
+                        docker stop asp-template 
+                        docker rm asp-template 
+                        docker run --name asp-template -e ASPNETCORE_ENVIRONMENT="Development" --restart=always -d -p 8080:8080 debian3:5000/asp-template:dev 
                         docker push debian3:5000/asp-template:dev
                         docker image prune -f"
                     '''
@@ -62,41 +62,42 @@ pipeline {
         }
         stage('Deploy staging') {
             when {
-                expression { params.CD == "Staging" || params.CD == "PassProduction" }
+                expression { params.CD == "Staging" || params.CD == "PassProduction" || params.Auto}
             }
             steps {
                 sshagent(['ssh-remote']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no vagrant@192.168.56.83 \
-                        "docker pull debian3:5000/asp-template:dev &&
-                        docker tag debian3:5000/asp-template:dev debian3:5000/asp-template &&
-                        docker stop asp-template &&
-                        docker rm asp-template &&
-                        docker run --name asp-template -e ASPNETCORE_ENVIRONMENT="Staging" --restart=always -d -p 8080:8080 debian3:5000/asp-template &&
-                        docker push debian3:5000/asp-template &&
-                        docker image prune -f"
+                        "docker pull debian3:5000/asp-template:dev 
+                        docker tag debian3:5000/asp-template:dev debian3:5000/asp-template 
+                        docker stop asp-template 
+                        docker rm asp-template 
+                        docker run --name asp-template -e ASPNETCORE_ENVIRONMENT="Staging" --restart=always -d -p 8080:8080 debian3:5000/asp-template 
+                        docker push debian3:5000/asp-template 
+                        docker image prune -f 
+                        trivy image debian3:5000/asp-template"
                     '''
                 }
             }
         }
         stage('Deploy production') {
             when {
-                expression { params.CD == "Production" || params.CD == "PassProduction" }
+                expression { params.CD == "Production" || params.CD == "PassProduction" || params.Auto }
             }
             steps {
                 sshagent(['ssh-remote']) {
                     sh '''
                         ssh -o StrictHostKeyChecking=no vagrant@192.168.56.84 \
-                        "export KUBECONFIG=/home/vagrant/.kube/config.yml &&
+                        "export KUBECONFIG=/home/vagrant/.kube/config.yml 
                         kubectl rollout restart deployment/asp-template-deployment"
                     '''
                 }
             }
         }
     }
-    post {
-        always {
-            echo "Clean up"
-        }
-    }
+    // post {
+    //     always {
+    //         echo "Clean up"
+    //     }
+    // }
 }

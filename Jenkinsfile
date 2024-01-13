@@ -10,7 +10,7 @@ pipeline {
         // }
         stage('Build') {
             when {
-                expression { params.CD == "Development" || params.CD == "PassProduction" }
+                expression { params.CD == "Development"}
             }
             steps {
                 sh 'dotnet restore'
@@ -19,7 +19,7 @@ pipeline {
         }
         stage('Test') {
             when {
-                expression { params.CD == "Development" || params.CD == "PassProduction" }
+                expression { params.CD == "Development"}
             }
             parallel {
                 stage('Unit Tests') {

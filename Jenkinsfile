@@ -46,7 +46,7 @@ pipeline {
             steps {
                 sshagent(['ssh-remote']) {
                     sh '''
-                        ssh vagrant@192.168.56.82 \
+                        ssh -o StrictHostKeyChecking=no vagrant@192.168.56.82 \
                         "cd AspTemplate 
                         git pull 
                         docker build -t debian3:5000/asp-template:dev . 

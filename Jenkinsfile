@@ -72,7 +72,7 @@ pipeline {
                         docker tag debian3:5000/asp-template:dev debian3:5000/asp-template 
                         docker stop asp-template 
                         docker rm asp-template 
-                        docker run --name asp-template -e ASPNETCORE_ENVIRONMENT="Staging" --restart=always -d -p 8080:8080 debian3:5000/asp-template 
+                        docker run --name asp-template -e ASPNETCORE_ENVIRONMENT="Staging" --restart=always -d -p 10000:8080 debian3:5000/asp-template 
                         docker push debian3:5000/asp-template 
                         docker image prune -f 
                         trivy image debian3:5000/asp-template"

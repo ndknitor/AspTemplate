@@ -8,7 +8,7 @@ pipeline {
         //         expression { params.CD == "Development" }
         //     }
         //     steps {
-        //         git branch: 'main', credentialsId: 'Ndkn', url: 'https://github.com/ndknitor/JenkinsImpact'
+        //         git branch: 'main', credentialsId: 'Ndkn', url: 'https://github.com/ndknitor/AspTemplate'
         //     }
         // }
         stage('Build') {
@@ -98,7 +98,7 @@ pipeline {
         }
         stage('Scan') {
             when {
-                expression { params.CD == "Staging" || params.CD == "PassProduction" || params.Auto}
+                expression { params.CD == "Staging" || params.CD == "PassProduction"}
             }
             parallel {
                 stage('Image scan') {
@@ -122,7 +122,7 @@ pipeline {
                                 -config replacer.full_list(0).matchtype=REQ_HEADER \
                                 -config replacer.full_list(0).matchstr=Authorization \
                                 -config replacer.full_list(0).regex=false \
-                                -config replacer.full_list(0).replacement=Bearer\\ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzA1MjkwNzMyLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo1MDAxIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMSJ9.VjJqvi2gncFd2k9QmSkCO7N9vgVXKLQMTNNIKowjg10"
+                                -config replacer.full_list(0).replacement=Bearer\\ ${asp-template-user-jwt}"
                                 '
                             '''
                         }

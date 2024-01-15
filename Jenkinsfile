@@ -4,13 +4,16 @@ pipeline {
     agent any
     stages {
         // stage('Clone repository') {
+        //     when {
+        //         expression { params.CD == "Development" }
+        //     }
         //     steps {
-        //          git branch: 'main', credentialsId: 'Ndkn', url: 'https://github.com/ndknitor/JenkinsImpact'
+        //         git branch: 'main', credentialsId: 'Ndkn', url: 'https://github.com/ndknitor/JenkinsImpact'
         //     }
         // }
         stage('Build') {
             when {
-                expression { params.CD == "Development"}
+                expression { params.CD == "Development" }
             }
             steps {
                 sh 'dotnet restore'
@@ -19,7 +22,7 @@ pipeline {
         }
         stage('Test') {
             when {
-                expression { params.CD == "Development"}
+                expression { params.CD == "Development" }
             }
             parallel {
                 stage('Unit Tests') {
@@ -46,7 +49,7 @@ pipeline {
             steps {
                 sshagent(['ssh-remote']) {
                     sh '''
-                        ssh -o StrictHostKeyChecking=no vagrant@192.168.56.82 \
+                        ssh vagrant@192.168.56.82 \
                         "cd AspTemplate 
                         git pull 
                         docker build -t debian3:5000/asp-template:dev . 
@@ -74,8 +77,21 @@ pipeline {
                         docker rm asp-template 
                         docker run --name asp-template -e ASPNETCORE_ENVIRONMENT="Staging" --restart=always -d -p 10000:8080 debian3:5000/asp-template 
                         docker push debian3:5000/asp-template 
-                        docker image prune -f 
-                        trivy image debian3:5000/asp-template"
+                        docker image prune -f "
+                    '''
+                }
+            }
+        }
+        stage('Deploy production') {
+            when {
+                expression { params.CD == "Production" || params.CD == "PassProduction" || params.Auto }
+            }
+            steps {
+                sshagent(['ssh-remote']) {
+                    sh '''
+                        ssh -o StrictHostKeyChecking=no vagrant@192.168.56.84 \
+                        "export KUBECONFIG=/home/vagrant/.kube/config.yml 
+                        kubectl rollout restart deployment/asp-template-deployment"
                     '''
                 }
             }
@@ -100,24 +116,17 @@ pipeline {
                         sshagent(['ssh-remote']) {
                             sh '''
                                 ssh -o StrictHostKeyChecking=no vagrant@192.168.56.83 \
-                                "docker run --rm -v $(pwd):/zap/wrk/:rw -t softwaresecurityproject/zap-stable zap-api-scan.py -I -t http://192.168.56.83:10000/swagger/v1/swagger.json -f openapi"
+                                'docker run --rm -v $(pwd):/zap/wrk/:rw -t softwaresecurityproject/zap-stable zap-api-scan.py -I -t http://192.168.56.83:10000/swagger/v1/swagger.json -f openapi \
+                                -z "-config replacer.full_list(0).description=auth1 \
+                                -config replacer.full_list(0).enabled=true \
+                                -config replacer.full_list(0).matchtype=REQ_HEADER \
+                                -config replacer.full_list(0).matchstr=Authorization \
+                                -config replacer.full_list(0).regex=false \
+                                -config replacer.full_list(0).replacement=Bearer\\ eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy5taWNyb3NvZnQuY29tL3dzLzIwMDgvMDYvaWRlbnRpdHkvY2xhaW1zL3JvbGUiOiJVc2VyIiwiZXhwIjoxNzA1MjkwNzMyLCJpc3MiOiJodHRwczovL2xvY2FsaG9zdDo1MDAxIiwiYXVkIjoiaHR0cHM6Ly9sb2NhbGhvc3Q6NTAwMSJ9.VjJqvi2gncFd2k9QmSkCO7N9vgVXKLQMTNNIKowjg10"
+                                '
                             '''
                         }
                     }
-                }
-            }
-        }
-        stage('Deploy production') {
-            when {
-                expression { params.CD == "Production" || params.CD == "PassProduction" || params.Auto }
-            }
-            steps {
-                sshagent(['ssh-remote']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no vagrant@192.168.56.84 \
-                        "export KUBECONFIG=/home/vagrant/.kube/config.yml 
-                        kubectl rollout restart deployment/asp-template-deployment"
-                    '''
                 }
             }
         }

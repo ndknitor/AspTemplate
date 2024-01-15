@@ -44,7 +44,7 @@ else
                 new string[] { }
             }
         });
-           c.EnableAnnotations();
+        c.EnableAnnotations();
     });
     builder.Services.AddEndpointsApiExplorer();
 }
@@ -227,14 +227,13 @@ if (app.Environment.IsProduction())
     });
     app.UseHsts();
     app.UseHttpsRedirection();
-    app.UseMiddleware<LoggingMiddleware>();
 }
 else
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseMiddleware<LoggingMiddleware>();
 app.UseStaticFiles();
 app.UseCors();
 app.UseAuthentication();

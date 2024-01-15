@@ -7,8 +7,8 @@ public class MapperProfile : Profile
 {
     public MapperProfile()
     {
-        CreateMap<Seat, RSeat>();
-        CreateMap<CSeat, Seat>();
-        CreateMap<USeat, Seat>();
+        // CreateMap<Seat, RSeat>();
+        // CreateMap<CSeat, Seat>();
+        // CreateMap<USeat, Seat>();
     }
 }

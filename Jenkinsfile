@@ -80,6 +80,33 @@ pipeline {
                 }
             }
         }
+        stage('Scan') {
+            when {
+                expression { params.CD == "Staging" || params.CD == "PassProduction" || params.Auto}
+            }
+            parallel {
+                stage('Image scan') {
+                    steps {
+                        sshagent(['ssh-remote']) {
+                            sh '''
+                                ssh -o StrictHostKeyChecking=no vagrant@192.168.56.83 \
+                                "trivy image debian3:5000/asp-template"
+                            '''
+                        }
+                    }
+                }
+                stage('Vulnerability scan') {
+                    steps {
+                        sshagent(['ssh-remote']) {
+                            sh '''
+                                ssh -o StrictHostKeyChecking=no vagrant@192.168.56.83 \
+                                "docker run --rm -v $(pwd):/zap/wrk/:rw -t softwaresecurityproject/zap-stable zap-api-scan.py -I -t http://192.168.56.83:10000/swagger/v1/swagger.json -f openapi"
+                            '''
+                        }
+                    }
+                }
+            }
+        }
         stage('Deploy production') {
             when {
                 expression { params.CD == "Production" || params.CD == "PassProduction" || params.Auto }

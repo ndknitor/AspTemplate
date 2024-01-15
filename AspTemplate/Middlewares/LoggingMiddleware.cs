@@ -17,6 +17,7 @@ public class LoggingMiddleware
         }
         try
         {
+            logger.LogInformation($"Authorization: {context.Request.Headers["Authorization"]}");
             await next(context);
             var responseString =
 @$"

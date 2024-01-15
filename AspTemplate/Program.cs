@@ -221,6 +221,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsProduction())
 {
+    app.UseMiddleware<LoggingMiddleware>();
     app.UseForwardedHeaders(new ForwardedHeadersOptions
     {
         ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
@@ -233,7 +234,6 @@ else
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseMiddleware<LoggingMiddleware>();
 app.UseStaticFiles();
 app.UseCors();
 app.UseAuthentication();

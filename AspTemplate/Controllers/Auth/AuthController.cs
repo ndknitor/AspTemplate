@@ -22,6 +22,10 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
         {
             return NotFound(null);
         }
+        if (HaveAuthorizationHeader())
+        {
+            return Forbid();
+        }
         var claims = new[] {
             new Claim(ClaimTypes.NameIdentifier, id.ToString()),
             new Claim(ClaimTypes.Role, "User")

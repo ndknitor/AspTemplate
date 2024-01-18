@@ -58,9 +58,9 @@ pipeline {
                         "cd AspTemplate 
                         git pull 
                         docker build -t ${devHost}:5000/asp-template:dev . 
-                        docker stop asp-template 
-                        docker rm asp-template 
-                        docker run --name asp-template -e ASPNETCORE_ENVIRONMENT="Development" --restart=always -d -p 8080:8080 ${devHost}:5000/asp-template:dev 
+                        docker stop asp-template-dev 
+                        docker rm asp-template-dev
+                        docker run --name asp-template-dev -e ASPNETCORE_ENVIRONMENT="Development" --restart=always -d -p 8080:8080 ${devHost}:5000/asp-template:dev 
                         docker push ${devHost}:5000/asp-template:dev
                         docker image prune -f"
                     """

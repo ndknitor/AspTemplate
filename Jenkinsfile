@@ -1,5 +1,10 @@
-// Generic Webhook Trigger Plugin
-// SSH Agent Plugin
+// Generic Webhook Trigger
+// SSH Agent
+def username = "vagrant"
+def devHost = "192.168.56.110"
+def stageHost = "192.168.56.110"
+def prodHost = "192.168.56.84"
+
 pipeline {
     agent any
     stages {
@@ -48,17 +53,17 @@ pipeline {
             }
             steps {
                 sshagent(['ssh-remote']) {
-                    sh '''
-                        ssh vagrant@192.168.56.82 \
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${username}@${devHost} \
                         "cd AspTemplate 
                         git pull 
-                        docker build -t debian3:5000/asp-template:dev . 
+                        docker build -t ${devHost}:5000/asp-template:dev . 
                         docker stop asp-template 
                         docker rm asp-template 
-                        docker run --name asp-template -e ASPNETCORE_ENVIRONMENT="Development" --restart=always -d -p 8080:8080 debian3:5000/asp-template:dev 
-                        docker push debian3:5000/asp-template:dev
+                        docker run --name asp-template -e ASPNETCORE_ENVIRONMENT="Development" --restart=always -d -p 8080:8080 ${devHost}:5000/asp-template:dev 
+                        docker push ${devHost}:5000/asp-template:dev
                         docker image prune -f"
-                    '''
+                    """
                 }
             }
             
@@ -69,16 +74,16 @@ pipeline {
             }
             steps {
                 sshagent(['ssh-remote']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no vagrant@192.168.56.83 \
-                        "docker pull debian3:5000/asp-template:dev 
-                        docker tag debian3:5000/asp-template:dev debian3:5000/asp-template 
-                        docker stop asp-template 
-                        docker rm asp-template 
-                        docker run --name asp-template -e ASPNETCORE_ENVIRONMENT="Staging" --restart=always -d -p 10000:8080 debian3:5000/asp-template 
-                        docker push debian3:5000/asp-template 
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${username}@${stageHost} \
+                        "docker pull ${devHost}:5000/asp-template:dev 
+                        docker tag ${devHost}:5000/asp-template:dev ${devHost}:5000/asp-template 
+                        docker stop asp-template-staging
+                        docker rm asp-template-staging 
+                        docker run --name asp-template-staging -e ASPNETCORE_ENVIRONMENT="Staging" --restart=always -d -p 10000:8080 ${devHost}:5000/asp-template 
+                        docker push ${devHost}:5000/asp-template 
                         docker image prune -f "
-                    '''
+                    """
                 }
             }
         }
@@ -88,11 +93,11 @@ pipeline {
             }
             steps {
                 sshagent(['ssh-remote']) {
-                    sh '''
-                        ssh -o StrictHostKeyChecking=no vagrant@192.168.56.84 \
-                        "export KUBECONFIG=/home/vagrant/.kube/config.yml 
+                    sh """
+                        ssh -o StrictHostKeyChecking=no ${username}@${prodHost} \
+                        "export KUBECONFIG=/home/${username}/.kube/config.yml 
                         kubectl rollout restart deployment/asp-template-deployment"
-                    '''
+                    """
                 }
             }
         }
@@ -104,36 +109,37 @@ pipeline {
                 stage('Image scan') {
                     steps {
                         sshagent(['ssh-remote']) {
-                            sh '''
-                                ssh -o StrictHostKeyChecking=no vagrant@192.168.56.83 \
-                                "trivy image debian3:5000/asp-template"
-                            '''
+                            sh """
+                                ssh -o StrictHostKeyChecking=no ${username}@${devHost} \
+                                "trivy image ${devHost}:5000/asp-template"
+                            """
                         }
                     }
                 }
                 stage('Vulnerability scan') {
                     steps {
                         sshagent(['ssh-remote']) {
-                            sh '''
-                                ssh -o StrictHostKeyChecking=no vagrant@192.168.56.83 \
-                                'docker run --rm -v $(pwd):/zap/wrk/:rw -t softwaresecurityproject/zap-stable zap-api-scan.py -I -t http://192.168.56.83:10000/swagger/v1/swagger.json -f openapi \
-                                -z "-config replacer.full_list(0).description=auth1 \
-                                -config replacer.full_list(0).enabled=true \
-                                -config replacer.full_list(0).matchtype=REQ_HEADER \
-                                -config replacer.full_list(0).matchstr=Authorization \
-                                -config replacer.full_list(0).regex=false \
-                                -config replacer.full_list(0).replacement=Bearer\\ ${asp-template-user-jwt}"
+                            sh """
+                                ssh -o StrictHostKeyChecking=no ${username}@${devHost} \
                                 '
-                            '''
+                                    docker run --rm -t softwaresecurityproject/zap-stable zap-api-scan.py -I -t http://${devHost}:10000/swagger/v1/swagger.json -f openapi \
+                                    -z "-config replacer.full_list(0).description=auth1 \
+                                    -config replacer.full_list(0).enabled=true \
+                                    -config replacer.full_list(0).matchtype=REQ_HEADER \
+                                    -config replacer.full_list(0).matchstr=Authorization \
+                                    -config replacer.full_list(0).regex=false \
+                                    -config replacer.full_list(0).replacement=Bearer\\ \${asp-template-user-jwt}"
+                                '
+                            """
                         }
                     }
                 }
             }
         }
     }
-    // post {
-    //     always {
-    //         echo "Clean up"
-    //     }
-    // }
+    post {
+        always {
+            echo "Clean up"
+        }
+    }
 }

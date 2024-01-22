@@ -4,6 +4,7 @@ using System.Security.Claims;
 using AspTemplate.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
 namespace NewTemplate.Controllers;
@@ -16,6 +17,13 @@ public class MainController : ControllerBase
     public IActionResult GetPage([FromQuery] OffsetPagingRequest request)
     {
         return Ok(Enumerable.Range((request.Page - 1) * request.Size, request.Size));
+    }
+    [HttpGet("memory")]
+    public IActionResult GetMemory([FromQuery] string name, [FromServices] IMemoryCache memory)
+    {
+        string token = memory.Get<string>(name);
+        memory.GetOrCreate("d", (c) => c.Value = "asdasd");
+        return Ok(new { token });
     }
     [HttpGet("single")]
     [SwaggerOperation($"Roles: {nameof(Role.Public)}")]
@@ -45,6 +53,6 @@ public class MainController : ControllerBase
     [HttpGet("environment")]
     public IActionResult GetEnvironment([FromServices] IWebHostEnvironment environment)
     {
-        return Ok(new { environment = environment, update = 6 });
+        return Ok(new { environment, update = 6 });
     }
 }

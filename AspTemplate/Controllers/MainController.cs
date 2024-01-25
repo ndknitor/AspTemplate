@@ -18,13 +18,6 @@ public class MainController : ControllerBase
     {
         return Ok(Enumerable.Range((request.Page - 1) * request.Size, request.Size));
     }
-    [HttpGet("memory")]
-    public IActionResult GetMemory([FromQuery] string name, [FromServices] IMemoryCache memory)
-    {
-        string token = memory.Get<string>(name);
-        memory.GetOrCreate("d", (c) => c.Value = "asdasd");
-        return Ok(new { token });
-    }
     [HttpGet("single")]
     [SwaggerOperation($"Roles: {nameof(Role.Public)}")]
     public IActionResult Get()

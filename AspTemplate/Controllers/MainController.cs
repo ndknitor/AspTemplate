@@ -44,8 +44,8 @@ public class MainController : ControllerBase
         return Ok(Dns.GetHostName());
     }
     [HttpGet("environment")]
-    public IActionResult GetEnvironment([FromServices] IWebHostEnvironment environment)
+    public IActionResult GetEnvironment([FromServices] IWebHostEnvironment environment, [FromServices] IConfiguration configuration)
     {
-        return Ok(new { environment, update = 6 });
+        return Ok(new { environment, connectionString = configuration.GetConnectionString("Default") });
     }
 }

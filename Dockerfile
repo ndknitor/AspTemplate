@@ -7,7 +7,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine AS final
 WORKDIR /app
 RUN apk update
 RUN apk upgrade
-RUN apk add libintl libssl1.1 libcrypto1.1 libstdc++ icu
+RUN apk add libintl libssl3 libcrypto3 libstdc++ icu
 COPY --from=build /app/out .
 EXPOSE 8080
 # RUN chown -R nobody /app

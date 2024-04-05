@@ -1,16 +1,9 @@
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
 public class FixSchedudedService : BackgroundService
 {
-    private readonly ILogger<ScheduledHostService> _logger;
+    private readonly ILogger<FixSchedudedService> _logger;
     private readonly IServiceScopeFactory _scopeFactory;
 
-    public ScheduledHostService(ILogger<ScheduledHostService> logger, IServiceScopeFactory scopeFactory)
+    public FixSchedudedService(ILogger<FixSchedudedService> logger, IServiceScopeFactory scopeFactory)
     {
         _logger = logger;
         _scopeFactory = scopeFactory;

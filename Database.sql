@@ -88,7 +88,18 @@ GO
 ALTER TABLE Bus add SeatCount as dbo.GetSeatCountForBus(Bus.BusId);
 COMMIT;
 
-insert into User (UserId, Email, Fullname, Phone, Address, RoleId, Password) values (0, 'ngodinhkhoinguyen69@gmail.com', 'Ngo Dinh Khoi Nguyen', '349-548-8233', '69 Asplie Lica', 0, 123456),(UserId, Email, Fullname, Phone, Address, RoleId, Password) values (1, 'akenewel0@gravatar.com', 'Ainsley Kenewel', '521-396-4437', '8 Alpine Junction', 3, 123456),(UserId, Email, Fullname, Phone, Address, RoleId, Password) values (2, 'dguidi1@google.it', 'Dannie Guidi', '834-807-3579', '3134 Talisman Avenue', 2, 123456),(UserId, Email, Fullname, Phone, Address, RoleId, Password) values (3, 'greppaport2@bloglines.com', 'Gypsy Reppaport', '178-549-8246', '6 Rockefeller Trail', 0, 123456),(UserId, Email, Fullname, Phone, Address, RoleId, Password) values (4, 'gsercombe3@jiathis.com', 'Gill Sercombe', '210-267-1214', '103 Montana Crossing', 0, 123456),(UserId, Email, Fullname, Phone, Address, RoleId, Password) values (5, 'wchestney4@time.com', 'Whitaker Chestney', '765-243-8331', '57 Lakeland Court', 3, 123456),(UserId, Email, Fullname, Phone, Address, RoleId, Password) values (6, 'jpease5@networksolutions.com', 'Justin Pease', '648-570-8710', '398 Sunbrook Parkway', 3, 123456),(UserId, Email, Fullname, Phone, Address, RoleId, Password) values (7, 'amadgin6@amazon.de', 'Ayn Madgin', '854-464-2842', '39843 Talisman Hill', 0, 123456),(UserId, Email, Fullname, Phone, Address, RoleId, Password) values (8, 'rhalleday7@economist.com', 'Rex Halleday', '541-709-3920', '56 Crescent Oaks Place', 0, 123456),(UserId, Email, Fullname, Phone, Address, RoleId, Password) values (9, 'fgonnel8@wiley.com', 'Frederigo Gonnel', '750-973-2099', '74 Karstens Trail', 3, 123456),(UserId, Email, Fullname, Phone, Address, RoleId, Password) values (10, 'jpeirazzi9@yahoo.co.jp', 'Juliana Peirazzi', '391-480-0322', '50 Lyons Park', 3, 123456);
+INSERT into [User] ([UserId], [Email], [Fullname], [Phone], [Address], [RoleId], [Password]) values 
+(0, 'ngodinhkhoinguyen69@gmail.com', 'Ngo Dinh Khoi Nguyen', '349-548-8233', '69 Asplie Lica', 0, '123456'),
+(1, 'akenewel0@gravatar.com', 'Ainsley Kenewel', '521-396-4437', '8 Alpine Junction', 3, '123456'),
+(2, 'dguidi1@google.it', 'Dannie Guidi', '834-807-3579', '3134 Talisman Avenue', 2, '123456'),
+(3, 'greppaport2@bloglines.com', 'Gypsy Reppaport', '178-549-8246', '6 Rockefeller Trail', 0, '123456'),
+(4, 'gsercombe3@jiathis.com', 'Gill Sercombe', '210-267-1214', '103 Montana Crossing', 0, '123456'),
+(5, 'wchestney4@time.com', 'Whitaker Chestney', '765-243-8331', '57 Lakeland Court', 3, '123456'),
+(6, 'jpease5@networksolutions.com', 'Justin Pease', '648-570-8710', '398 Sunbrook Parkway', 3, '123456'),
+(7, 'amadgin6@amazon.de', 'Ayn Madgin', '854-464-2842', '39843 Talisman Hill', 0, '123456'),
+(8, 'rhalleday7@economist.com', 'Rex Halleday', '541-709-3920', '56 Crescent Oaks Place', 0, '123456'),
+(9, 'fgonnel8@wiley.com', 'Frederigo Gonnel', '750-973-2099', '74 Karstens Trail', 3, '123456'),
+(10, 'jpeirazzi9@yahoo.co.jp', 'Juliana Peirazzi', '391-480-0322', '50 Lyons Park', 3, '123456');
 
 INSERT INTO Bus(BusId,[Name],LicensePlate,Deleted) VALUES('1','Sdasad','41A23435','false'),('2','Sdasad','43278322','false'),('3','Sdasad','23434322','false'),('4','Sdasad','23423234','false'),('5','Sdasad','23423423','false'),('7','Sdasad','34534532','false'),('10','Sdasad','34534534','false'),('11','Sdasad','23425464','false'),('12','Sdasad','34657432','false'),('13','Sdasad','43543434','false'),('14','From the nam','47A82783','false');
 

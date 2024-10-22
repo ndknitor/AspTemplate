@@ -211,6 +211,15 @@ builder.Services.AddAuthentication(options =>
 // });
 #endregion
 
+builder.Services.AddAuthorization(options =>
+{
+    foreach (UserType userType in Enum.GetValues(typeof(UserType)))
+    {
+        options.AddPolicy(userType.ToString(), policy =>
+            policy.RequireClaim(nameof(UserType), userType.ToString()));
+    }
+});
+
 builder.Services.AddDbContext<EtdbContext>(o => o.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
 //builder.Services.AddHostedService<PreloadHostedService>();

@@ -213,10 +213,10 @@ builder.Services.AddAuthentication(options =>
 
 builder.Services.AddAuthorization(options =>
 {
-    foreach (UserType userType in Enum.GetValues(typeof(UserType)))
+    foreach (UserPolicy userPolicy in Enum.GetValues(typeof(UserPolicy)))
     {
-        options.AddPolicy(userType.ToString(), policy =>
-            policy.RequireClaim(nameof(UserType), userType.ToString()));
+        options.AddPolicy(userPolicy.ToString(), policy =>
+            policy.RequireClaim(nameof(UserPolicy), userPolicy.ToString()));
     }
 });
 

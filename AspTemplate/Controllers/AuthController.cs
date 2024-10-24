@@ -16,7 +16,7 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
 {
     [HttpGet("debug/cookie/{id:long}")]
     [SwaggerOperation($"Roles: {nameof(Role.Public)}")]
-    public async Task<IActionResult> DebugCookie([FromRoute] long id, [FromQuery] Role role, [FromQuery] UserType userType)
+    public async Task<IActionResult> DebugCookie([FromRoute] long id, [FromQuery] Role role, [FromQuery] UserPolicy userPolicy)
     {
         if (environment.IsProduction())
         {
@@ -29,7 +29,7 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
         var claims = new[] {
             new Claim(ClaimTypes.NameIdentifier, id.ToString()),
             new Claim(ClaimTypes.Role, role.ToString()),
-            new Claim(nameof(UserType), userType.ToString())
+            new Claim(nameof(UserPolicy), userPolicy.ToString())
         };
         await GetCookie(claims);
         return Ok(new StandardResponse
@@ -39,7 +39,7 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
     }
     [HttpGet("debug/jwt/{id:long}")]
     [SwaggerOperation($"Roles: {nameof(Role.Public)}")]
-    public IActionResult DebugJwt([FromRoute] long id, [FromQuery] Role role, [FromQuery] UserType userType)
+    public IActionResult DebugJwt([FromRoute] long id, [FromQuery] Role role, [FromQuery] UserPolicy userPolicy)
     {
         if (environment.IsProduction())
         {
@@ -48,7 +48,7 @@ public class AuthController(IHttpContextAccessor accessor, IConfiguration config
         var claims = new[] {
             new Claim(ClaimTypes.NameIdentifier, id.ToString()),
             new Claim(ClaimTypes.Role, role.ToString()),
-            new Claim(nameof(UserType), userType.ToString())
+            new Claim(nameof(UserPolicy), userPolicy.ToString())
         };
         return Ok(new SingleResponse<string>
         {

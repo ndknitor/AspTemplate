@@ -13,12 +13,12 @@ namespace NewTemplate.Controllers;
 public class CustomerController : ControllerBase
 {
     [HttpGet("regular")]
-    [Authorize(Policy = nameof(UserType.Regular))]
+    [Authorize(Policy = nameof(UserPolicy.Regular))]
     public IActionResult GetPage([FromQuery] OffsetPagingRequest request)
     {
         return Ok(Enumerable.Range((request.Page - 1) * request.Size, request.Size));
     }
-    [Authorize(Policy = nameof(UserType.VIP))]
+    [Authorize(Policy = nameof(UserPolicy.VIP))]
     [HttpGet("vip")]
     public IActionResult GetPageVIP([FromQuery] OffsetPagingRequest request)
     {

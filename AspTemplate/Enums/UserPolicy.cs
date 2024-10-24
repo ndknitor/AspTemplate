@@ -1,4 +1,4 @@
-public enum UserType
+public enum UserPolicy
 {
     Regular,
     VIP

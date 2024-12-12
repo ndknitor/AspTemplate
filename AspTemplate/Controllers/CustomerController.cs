@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Net;
 using System.Security.Claims;
-using AspTemplate.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;

@@ -1,21 +1,33 @@
 using System.Security.Principal;
 using System.Text;
 using System.Text.Json.Serialization;
-using AspTemplate.Context;
+//using AspTemplate.Context;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry.Metrics;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder();//CreateEmptyBuilder(new WebApplicationOptions { Args = args, ApplicationName = "AspTemplate", WebRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot"), ContentRootPath = Directory.GetCurrentDirectory(), EnvironmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") });
+
 if (builder.Environment.IsProduction())
 {
     // builder.Logging.ClearProviders();
     // Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration.GetSection("Logging")).CreateLogger();
     // builder.Logging.AddSerilog(Log.Logger);
+    builder.Services.AddOpenTelemetry().WithMetrics(m =>
+    {
+        m.AddPrometheusExporter();
+        m.AddMeter("Microsoft.AspNetCore.Hosting", "Microsoft.AspNetCore.Server.Kestrel");
+        m.AddView("http.server.request.duration",
+            new ExplicitBucketHistogramConfiguration
+            {
+                Boundaries = new double[] { 0, 0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1, 2.5, 5, 7.5, 10 }
+            });
+    });
 }
 else
 {
@@ -220,7 +232,7 @@ builder.Services.AddAuthorization(options =>
     }
 });
 
-builder.Services.AddDbContext<EtdbContext>(o => o.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).UseSqlServer(builder.Configuration.GetConnectionString("Default")));
+//builder.Services.AddDbContext<EtdbContext>(o => o.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking).UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 builder.Services.AddAutoMapper(typeof(MapperProfile).Assembly);
 //builder.Services.AddHostedService<PreloadHostedService>();
 builder.Services.ServiceConfiguration();
@@ -228,17 +240,17 @@ builder.Services.ServiceConfiguration();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsProduction())
-{
-    app.UseMiddleware<LoggingMiddleware>();
-    app.UseForwardedHeaders(new ForwardedHeadersOptions
-    {
-        ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-    });
-    app.UseHsts();
-    app.UseHttpsRedirection();
-}
-else
+// if (app.Environment.IsProduction())
+// {
+//     //app.UseMiddleware<LoggingMiddleware>();
+//     app.UseForwardedHeaders(new ForwardedHeadersOptions
+//     {
+//         ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+//     });
+//     app.UseHsts();
+//     app.UseHttpsRedirection();
+// }
+// else
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -249,6 +261,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHub<SignalRHub>("/signalr");
+app.MapPrometheusScrapingEndpoint();
 
 app.Run();
 //dotnet ef dbcontext scaffold "Data Source=127.0.0.1;TrustServerCertificate=True;Initial Catalog=etdb;User ID=sa;Password=password"  Microsoft.EntityFrameworkCore.SqlServer -f --no-pluralize --no-onconfiguring -o Context

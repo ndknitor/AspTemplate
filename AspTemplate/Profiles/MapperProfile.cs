@@ -1,4 +1,3 @@
-using AspTemplate.Context;
 using AutoMapper;
 using NewTemplate.Controllers;
 

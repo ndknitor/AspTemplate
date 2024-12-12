@@ -11,7 +11,7 @@ CREATE TABLE `User` (
     PRIMARY KEY (UserId)
 );
 
-CREATE TABLE Bus (
+CREATE TABLE `Bus` (
     BusId INT NOT NULL,
     Name VARCHAR(128),
     LicensePlate VARCHAR(16) NOT NULL,
@@ -116,7 +116,7 @@ INSERT INTO `Route`(`RouteId`,`From`,`To`,`BasePrice`,`Deleted`) VALUES
 ,('22','Long An','Ha Noi','500000',1)
 ,('23','Long An','Ho Chi Minh','500000',1);
 
-INSERT INTO Seat(SeatId,BusId,Price,Deleted,[Name]) VALUES('21','1','250000',0,'A1')
+INSERT INTO `Seat` (SeatId,BusId,Price,Deleted,[Name]) VALUES('21','1','250000',0,'A1')
 ,('22','1','250000',0,'A2')
 ,('23','1','250000',0,'A3')
 ,('24','1','250000',0,'A4')
@@ -207,7 +207,7 @@ INSERT INTO Seat(SeatId,BusId,Price,Deleted,[Name]) VALUES('21','1','250000',0,'
 ,('162','14','300000',0,'A29')
 ,('163','14','300000',0,'A30');
 
-INSERT INTO Trip(TripId,RouteId,StartDate,EndDate,BusId) VALUES('2','2','2022-11-13 08:14:27','2022-11-15 08:14:27','2')
+INSERT INTO `Trip` (TripId,RouteId,StartDate,EndDate,BusId) VALUES('2','2','2022-11-13 08:14:27','2022-11-15 08:14:27','2')
 ,('3','2','2022-11-15 21:00:00','2022-11-15 22:00:00','2')
 ,('4','2','2022-11-15 19:00:00','2022-11-15 22:00:00','3')
 ,('5','2','2022-11-15 18:00:00','2022-11-15 22:00:00','4')

@@ -1,7 +1,6 @@
 using System.Diagnostics;
 using System.Net;
 using System.Security.Claims;
-using AspTemplate.Context;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
@@ -47,5 +46,11 @@ public class MainController : ControllerBase
     public IActionResult GetEnvironment([FromServices] IWebHostEnvironment environment, [FromServices] IConfiguration configuration)
     {
         return Ok(new { environment, connectionString = configuration.GetConnectionString("Default") });
+    }
+    [HttpGet("error")]
+    public IActionResult GetError([FromServices] IWebHostEnvironment environment, [FromServices] IConfiguration configuration)
+    {
+        int a = int.Parse("a");
+        return Ok();
     }
 }

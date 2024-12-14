@@ -12,7 +12,7 @@ pipeline {
 
         ARGOCD_SERVER= "192.168.121.104"
         ARGOCD_APP_NAME = "asp-template"
-        ARGOCD_TOKEN = "${argocd_ds_token}"
+        ARGOCD_TOKEN = credentials('argocd_ds_token')
     }
     stages {
         // stage('Clone repository') {

@@ -87,10 +87,10 @@ pipeline {
         //     }
         // }
         stage('Trigger ArgoCD sync for developent environment') {
-            script {
-                withCredentials([string(credentialsId: 'argocd_ds_token', variable: 'ARGOCD_TOKEN')])
-                steps {
-                    sh """curl -H "Authorization': "Bearer ${ARGOCD_TOKEN}" -x POST  "https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/sync" """
+            steps {
+                script {
+                    withCredentials([string(credentialsId: 'argocd_ds_token', variable: 'ARGOCD_TOKEN')])
+                        sh """curl -H "Authorization': "Bearer ${ARGOCD_TOKEN}" -x POST  "https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/sync" """
                 }
             }
         }

@@ -10,7 +10,7 @@ pipeline {
         REGISTRY = "utility.ndkn.local"
         IMAGE_NAME = "utility.ndkn.local/ndkn/asp-template"
 
-        ARGOCD_SERVER= "192.168.121.104"
+        ARGOCD_SERVER= "192.168.121.104:30987"
         ARGOCD_APP_NAME = "asp-template"
     }
     stages {

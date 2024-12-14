@@ -4,7 +4,8 @@
 // def devHost = "192.168.56.110"
 // def stageHost = "192.168.56.110"
 // def prodHost = "192.168.56.84"
-
+def registry = "utility.ndkn.local"
+def image_name = "utility.ndkn.local/ndkn/asp-template"
 pipeline {
     agent any
     stages {
@@ -16,6 +17,12 @@ pipeline {
         //         git branch: 'main', credentialsId: 'Ndkn', url: 'https://github.com/ndknitor/AspTemplate'
         //     }
         // }
+        stage('Setup') {
+            steps {
+                sh 'export DOTNET_CLI_TELEMETRY_OPTOUT=0'
+            }
+        }
+        
         stage('Build') {
             when {
                 expression { params.CD == "None" || params.CD == "Development" }
@@ -43,31 +50,30 @@ pipeline {
                     }
                 }
             }
-            // steps {
-            //     sh 'dotnet test'
-            // }
         }
-    //     stage('Deploy development') {
-    //         when {
-    //             expression { params.CD == "Development" }
-    //         }
-    //         steps {
-    //             sshagent(['ssh-remote']) {
-    //                 sh """
-    //                     ssh -o StrictHostKeyChecking=no ${username}@${devHost} \
-    //                     "cd AspTemplate 
-    //                     git pull 
-    //                     docker build -t ${devHost}:5000/asp-template:dev . 
-    //                     docker stop asp-template-dev 
-    //                     docker rm asp-template-dev
-    //                     docker run --name asp-template-dev -e ASPNETCORE_ENVIRONMENT="Development" --restart=always -d -p 8080:8080 ${devHost}:5000/asp-template:dev 
-    //                     docker push ${devHost}:5000/asp-template:dev
-    //                     docker image prune -f"
-    //                 """
-    //             }
-    //         }
-            
-    //     }
+        stage('Build image') {
+            when {
+                expression { params.CD == "Development" }
+            }
+            steps {
+                    sh 'docker build -t ${image_name} .'
+                }
+            }
+        stage('Push image to registry')
+        {
+            when {
+                expression { params.CD == "Development" }
+            }
+            steps {
+                script{
+                    withCredentials([usernamePassword(credentialsId: 'registry_credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'docker login utility.ndkn.local -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}'
+                        sh 'docker push ${image_name}'
+                        sh 'docker image prune -f'
+                    }
+                }
+            }
+        }
     //     stage('Deploy staging') {
     //         when {
     //             expression { params.CD == "Staging" || params.CD == "PassProduction" || params.Auto}

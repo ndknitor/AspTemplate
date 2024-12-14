@@ -86,14 +86,17 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Trigger ArgoCD sync for developent environment') {
-            steps {
-                script {
-                    withCredentials([string(credentialsId: 'argocd_ds_token', variable: 'ARGOCD_TOKEN')])
-                        sh """curl -H "Authorization': "Bearer ${ARGOCD_TOKEN}" -x POST  "https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/sync" """
+            stage('Trigger ArgoCD sync for development environment') {
+                steps {
+                    script {
+                        withCredentials([string(credentialsId: 'argocd_ds_token', variable: 'ARGOCD_TOKEN')]) {
+                            sh """
+                            curl -H "Authorization: Bearer ${ARGOCD_TOKEN}" -X POST "https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/sync"
+                            """
+                        }
+                    }
                 }
             }
-        }
     //     stage('Deploy staging') {
     //         when {
     //             expression { params.CD == "Staging" || params.CD == "PassProduction" || params.Auto}

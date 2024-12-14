@@ -5,7 +5,7 @@
 // def stageHost = "192.168.56.110"
 // def prodHost = "192.168.56.84"
 def registry = "utility.ndkn.local"
-def image_name = "utility.ndkn.local/ndkn/asp-template"
+def imageName = "utility.ndkn.local/ndkn/asp-template"
 pipeline {
     agent any
     stages {
@@ -56,7 +56,7 @@ pipeline {
                 expression { params.CD == "Development" }
             }
             steps {
-                    sh 'docker build -t ${image_name} .'
+                    sh 'docker build -t ${imageName} .'
                 }
             }
         stage('Push image to registry')
@@ -68,7 +68,7 @@ pipeline {
                 script{
                     withCredentials([usernamePassword(credentialsId: 'registry_credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'docker login utility.ndkn.local -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}'
-                        sh 'docker push ${image_name}'
+                        sh 'docker push ${imageName}'
                         sh 'docker image prune -f'
                     }
                 }

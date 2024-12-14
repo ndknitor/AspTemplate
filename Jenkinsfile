@@ -91,7 +91,7 @@ pipeline {
                     script {
                         withCredentials([string(credentialsId: 'argocd_ds_token', variable: 'ARGOCD_TOKEN')]) {
                             sh """
-                            curl -H "Authorization: Bearer ${ARGOCD_TOKEN}" -X POST "https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/sync"
+                            curl --insecure -X POST -H "Content-Type: application/json" -H "X-GitHub-Event: push" -d '{"repository": {"url": "https://github.com/org/repo"}, "ref": "refs/heads/main"}' k8s-1-w1.ndkn.local:30987/api/webhook
                             """
                         }
                     }

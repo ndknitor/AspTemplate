@@ -239,21 +239,22 @@ builder.Services.ServiceConfiguration();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-// if (app.Environment.IsProduction())
-// {
-//     //app.UseMiddleware<LoggingMiddleware>();
-//     app.UseForwardedHeaders(new ForwardedHeadersOptions
-//     {
-//         ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-//     });
-//     app.UseHsts();
-//     app.UseHttpsRedirection();
-// }
-// else
+//Configure the HTTP request pipeline.
+if (app.Environment.IsProduction())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    //app.UseMiddleware<LoggingMiddleware>();
+    // app.UseForwardedHeaders(new ForwardedHeadersOptions
+    // {
+    //     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    // });
+    // app.UseHsts();
+    // app.UseHttpsRedirection();
+    app.MapPrometheusScrapingEndpoint();
+}
+else
+{
+    // app.UseSwagger();
+    // app.UseSwaggerUI();
 }
 app.UseStaticFiles();
 app.UseCors();
@@ -261,7 +262,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHub<SignalRHub>("/signalr");
-app.MapPrometheusScrapingEndpoint();
+
 
 app.Run();
 //dotnet ef dbcontext scaffold "Data Source=127.0.0.1;TrustServerCertificate=True;Initial Catalog=etdb;User ID=sa;Password=password"  Microsoft.EntityFrameworkCore.SqlServer -f --no-pluralize --no-onconfiguring -o Context

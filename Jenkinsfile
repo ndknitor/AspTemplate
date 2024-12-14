@@ -9,6 +9,10 @@ pipeline {
     environment {
         REGISTRY = "utility.ndkn.local"
         IMAGE_NAME = "utility.ndkn.local/ndkn/asp-template"
+
+        ARGOCD_SERVER= "192.168.121.104"
+        ARGOCD_APP_NAME = "asp-template"
+        ARGOCD_TOKEN = "${argocd_ds_token}"
     }
     stages {
         // stage('Clone repository') {
@@ -24,7 +28,6 @@ pipeline {
                 sh 'export DOTNET_CLI_TELEMETRY_OPTOUT=0'
             }
         }
-        
         stage('Build') {
             when {
                 expression { params.CD == "None" || params.CD == "Development" }
@@ -73,6 +76,28 @@ pipeline {
                         sh 'docker push ${IMAGE_NAME}'
                         sh 'docker image prune -f'
                     }
+                }
+            }
+        }
+        // stage('Clone Ops Repository') {
+        //     steps {
+        //         script {
+        //             // Clone the source repository
+        //             git credentialsId: "GitNDKN", url: "https://github.com/ndknitor/asp-template-gitops"
+        //         }
+        //     }
+        // }
+        stage('Trigger ArgoCD sync for developent environment') {
+            steps {
+                script {
+                    def response = httpRequest(
+                        url: 'https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/sync',
+                        httpMode: 'POST',
+                        headers: [
+                            'Authorization': "Bearer ${ARGOCD_TOKEN}"
+                        ]
+                    )
+                    echo "ArgoCD Sync Response: ${response}"
                 }
             }
         }

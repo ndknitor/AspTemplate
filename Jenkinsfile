@@ -69,7 +69,7 @@ pipeline {
             steps {
                 script{
                     withCredentials([usernamePassword(credentialsId: 'registry_credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'docker login utility.ndkn.local -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}'
+                        sh 'docker login utility.ndkn.local -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"'
                         sh 'docker push ${IMAGE_NAME}'
                         sh 'docker image prune -f'
                     }

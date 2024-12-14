@@ -4,10 +4,12 @@
 // def devHost = "192.168.56.110"
 // def stageHost = "192.168.56.110"
 // def prodHost = "192.168.56.84"
-def registry = "utility.ndkn.local"
-def imageName = "utility.ndkn.local/ndkn/asp-template"
 pipeline {
     agent any
+    environment {
+        REGISTRY = "utility.ndkn.local"
+        IMAGE_NAME = "utility.ndkn.local/ndkn/asp-template"
+    }
     stages {
         // stage('Clone repository') {
         //     when {
@@ -56,7 +58,7 @@ pipeline {
                 expression { params.CD == "Development" }
             }
             steps {
-                    sh 'docker build -t ${imageName} .'
+                    sh 'docker build -t ${IMAGE_NAME} .'
                 }
             }
         stage('Push image to registry')
@@ -68,7 +70,7 @@ pipeline {
                 script{
                     withCredentials([usernamePassword(credentialsId: 'registry_credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'docker login utility.ndkn.local -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}'
-                        sh 'docker push ${imageName}'
+                        sh 'docker push ${IMAGE_NAME}'
                         sh 'docker image prune -f'
                     }
                 }

@@ -12,7 +12,6 @@ pipeline {
 
         ARGOCD_SERVER= "192.168.121.104"
         ARGOCD_APP_NAME = "asp-template"
-        ARGOCD_TOKEN = credentials('argocd_ds_token')
     }
     stages {
         // stage('Clone repository') {
@@ -88,6 +87,7 @@ pipeline {
         //     }
         // }
         stage('Trigger ArgoCD sync for developent environment') {
+            withCredentials([string(credentialsId: 'argocd_ds_token', variable: 'ARGOCD_TOKEN')])
             steps {
                 sh """curl -H "Authorization': "Bearer ${ARGOCD_TOKEN}" -x POST  "https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/sync" """
             }

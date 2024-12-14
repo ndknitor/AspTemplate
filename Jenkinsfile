@@ -89,16 +89,7 @@ pipeline {
         // }
         stage('Trigger ArgoCD sync for developent environment') {
             steps {
-                script {
-                    def response = httpRequest(
-                        url: 'https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/sync',
-                        httpMode: 'POST',
-                        headers: [
-                            'Authorization': "Bearer ${ARGOCD_TOKEN}"
-                        ]
-                    )
-                    echo "ArgoCD Sync Response: ${response}"
-                }
+                sh """curl -H "Authorization': "Bearer ${ARGOCD_TOKEN}" -x POST  "https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/sync" """
             }
         }
     //     stage('Deploy staging') {

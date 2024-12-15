@@ -1,9 +1,5 @@
 // Generic Webhook Trigger
 // SSH Agent
-// def username = "vagrant"
-// def devHost = "192.168.56.110"
-// def stageHost = "192.168.56.110"
-// def prodHost = "192.168.56.84"
 pipeline {
     agent any
     environment {
@@ -70,7 +66,7 @@ pipeline {
             }
             steps {
                 script{
-                    withCredentials([usernamePassword(credentialsId: 'registry_credentials', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                    withCredentials([usernamePassword(credentialsId: 'registry_credential', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                         sh 'docker login utility.ndkn.local -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"'
                         sh 'docker push ${IMAGE_NAME}'
                         sh 'docker image prune -f'
@@ -78,6 +74,23 @@ pipeline {
                 }
             }
         }
+        stage('Trigger ArgoCD sync for development environment') {
+        steps {
+            script {
+                sh """
+                curl --insecure -X POST -H "Content-Type: application/json" -H "X-GitHub-Event: push" -d '{"repository": {"url": "https://github.com/ndknitor/asp-template-gitops"}, "ref": "refs/heads/main"}' k8s-1-w1.ndkn.local:30987/api/webhook
+                """
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
         // stage('Clone Ops Repository') {
         //     steps {
         //         script {
@@ -86,15 +99,8 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Trigger ArgoCD sync for development environment') {
-            steps {
-                script {
-                    sh """
-                    curl --insecure -X POST -H "Content-Type: application/json" -H "X-GitHub-Event: push" -d '{"repository": {"url": "https://github.com/ndknitor/asp-template-gitops"}, "ref": "refs/heads/main"}' k8s-1-w1.ndkn.local:30987/api/webhook
-                    """
-                }
-            }
-        }
+
+        
     //     stage('Deploy staging') {
     //         when {
     //             expression { params.CD == "Staging" || params.CD == "PassProduction" || params.Auto}
@@ -168,5 +174,4 @@ pipeline {
     //     always {
     //         echo "Clean up"
     //     }
-    }
-}
+    //}

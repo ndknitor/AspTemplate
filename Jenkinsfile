@@ -81,16 +81,15 @@ pipeline {
         //         }
         //     }
         // }
-        stage('Trigger ArgoCD sync for development environment') {
+        stage('Development environment deployment') {
             when {
                 expression { params.CD == "Development" }
             }
             steps {
                 script {
-                    withCredentials([usernamePassword(credentialsId: 'argocd_credential', usernameVariable: 'ARGOCD_USERNAME', passwordVariable: 'ARGOCD_PASSWORD')]) {
+                    withCredentials([string(credentialsId: 'argocd_token', variable: 'ARGOCD_TOKEN')]) {
                         sh '''
-                        TOKEN=$(curl --insecure -X POST -H 'Content-Type: application/json' -d '{"username":"'${ARGOCD_USERNAME}'","password":"'${ARGOCD_PASSWORD}'"}' https://${ARGOCD_SERVER}/api/v1/session | jq -r .token)
-                        curl --insecure -X POST -H "Content-Type: application/json" -d '"restart"' -H "Authorization: Bearer ${TOKEN}" "https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/resource/actions?appNamespace=argocd&namespace=${ARGOCD_NAMESPACE}&resourceName=${ARGOCD_RESOURCE_NAME}&version=v1&kind=Deployment&group=apps" 
+                        curl --insecure -X POST -H "Content-Type: application/json" -d '"restart"' -H "Authorization: Bearer ${ARGOCD_TOKEN}" "https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/resource/actions?appNamespace=argocd&namespace=${ARGOCD_NAMESPACE}&resourceName=${ARGOCD_RESOURCE_NAME}&version=v1&kind=Deployment&group=apps" 
                         '''
                     }
                 }

@@ -76,9 +76,12 @@ pipeline {
             }
             steps {
                 script {
-                    sh """
-                    curl --insecure -X POST -H "Content-Type: application/json" -H "X-GitHub-Event: push" -d '{"repository": {"url": "https://github.com/ndknitor/asp-template-gitops"}, "ref": "refs/heads/main"}' ${ARGOCD_SERVER}/api/webhook
-                    """
+                    withCredentials([usernamePassword(credentialsId: 'argocd_credential', usernameVariable: 'AGROCD_USERNAME', passwordVariable: 'ARGOCD_PASSWORD')]) {
+                        sh """
+                        TOKEN=$(curl --insecure -X POST -H 'Content-Type: application/json' -d $'{"username":"'${ARGOCD_USERNAME}'","password":"'${ARGOCD_PASSWORD}'"}' https://${ARGOCD_SERVER}/api/v1/session | jq -r .token)
+                        curl --insecure -H "Authorization: Bearer ${TOKEN}" -X POST -H 'Content-Type: application/json' -d '{"appNamespace":"argocd","revision":"HEAD","prune":false,"dryRun":false,"strategy":{"hook":{"force":false}},"resources":null,"syncOptions":{"items":[]}}' https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/sync
+                        """
+                    }
                 }
             }
         }

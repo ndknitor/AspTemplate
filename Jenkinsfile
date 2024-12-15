@@ -90,7 +90,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'argocd_credential', usernameVariable: 'ARGOCD_USERNAME', passwordVariable: 'ARGOCD_PASSWORD')]) {
                         sh '''
                         TOKEN=$(curl --insecure -X POST -H 'Content-Type: application/json' -d '{"username":"'${ARGOCD_USERNAME}'","password":"'${ARGOCD_PASSWORD}'"}' https://${ARGOCD_SERVER}/api/v1/session | jq -r .token)
-                        curl --insecure -H "Authorization: Bearer ${TOKEN}" https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/resource/actions?appNamespace=argocd&namespace=${ARGOCD_NAMESPACE}&resourceName=${ARGOCD_RESOURCE_NAME}&version=v1&kind=Deployment&group=apps 
+                        curl --insecure -X POST -H "Content-Type: application/json" -d '"restart"' -H "Authorization: Bearer ${TOKEN}" https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/resource/actions?appNamespace=argocd&namespace=${ARGOCD_NAMESPACE}&resourceName=${ARGOCD_RESOURCE_NAME}&version=v1&kind=Deployment&group=apps 
                         '''
                     }
                 }

@@ -21,35 +21,35 @@ pipeline {
         //     }
         // }
 
-        // stage('Build') {
-        //     when {
-        //         expression { params.CD == "None" || params.CD == "Development" }
-        //     }
-        //     steps {
-        //         sh 'export DOTNET_CLI_TELEMETRY_OPTOUT=0'
-        //         sh 'dotnet restore'
-        //         sh 'dotnet build --no-restore'
-        //     }
-        // }
-        // stage('Test') {
-        //     when {
-        //         expression { params.CD == "None" || params.CD == "Development" }
-        //     }
-        //     parallel {
-        //         stage('Unit Tests') {
-        //             steps {
-        //                 echo 'Running unit tests...'
-        //                 // Add your unit test steps here
-        //             }
-        //         }
-        //         stage('Integration Tests') {
-        //             steps {
-        //                 echo 'Running integration tests...'
-        //                 // Add your integration test steps here
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Build') {
+            when {
+                expression { params.CD == "None" || params.CD == "Development" }
+            }
+            steps {
+                sh 'export DOTNET_CLI_TELEMETRY_OPTOUT=0'
+                sh 'dotnet restore'
+                sh 'dotnet build --no-restore'
+            }
+        }
+        stage('Test') {
+            when {
+                expression { params.CD == "None" || params.CD == "Development" }
+            }
+            parallel {
+                stage('Unit Tests') {
+                    steps {
+                        echo 'Running unit tests...'
+                        // Add your unit test steps here
+                    }
+                }
+                stage('Integration Tests') {
+                    steps {
+                        echo 'Running integration tests...'
+                        // Add your integration test steps here
+                    }
+                }
+            }
+        }
         stage('Build image') {
             when {
                 expression { params.CD == "Development" }

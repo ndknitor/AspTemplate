@@ -86,17 +86,15 @@ pipeline {
         //         }
         //     }
         // }
-            stage('Trigger ArgoCD sync for development environment') {
-                steps {
-                    script {
-                        withCredentials([string(credentialsId: 'argocd_ds_token', variable: 'ARGOCD_TOKEN')]) {
-                            sh """
-                            curl --insecure -X POST -H "Content-Type: application/json" -H "X-GitHub-Event: push" -d '{"repository": {"url": "https://github.com/ndknitor/asp-template-gitops"}, "ref": "refs/heads/main"}' k8s-1-w1.ndkn.local:30987/api/webhook
-                            """
-                        }
-                    }
+        stage('Trigger ArgoCD sync for development environment') {
+            steps {
+                script {
+                    sh """
+                    curl --insecure -X POST -H "Content-Type: application/json" -H "X-GitHub-Event: push" -d '{"repository": {"url": "https://github.com/ndknitor/asp-template-gitops"}, "ref": "refs/heads/main"}' k8s-1-w1.ndkn.local:30987/api/webhook
+                    """
                 }
             }
+        }
     //     stage('Deploy staging') {
     //         when {
     //             expression { params.CD == "Staging" || params.CD == "PassProduction" || params.Auto}

@@ -18,16 +18,12 @@ pipeline {
         //         git branch: 'main', credentialsId: 'Ndkn', url: 'https://github.com/ndknitor/AspTemplate'
         //     }
         // }
-        stage('Setup') {
-            steps {
-                sh 'export DOTNET_CLI_TELEMETRY_OPTOUT=0'
-            }
-        }
         stage('Build') {
             when {
                 expression { params.CD == "None" || params.CD == "Development" }
             }
             steps {
+                sh 'export DOTNET_CLI_TELEMETRY_OPTOUT=0'
                 sh 'dotnet restore'
                 sh 'dotnet build --no-restore'
             }
@@ -59,6 +55,7 @@ pipeline {
                     sh 'docker build -t ${IMAGE_NAME} .'
                 }
             }
+        }
         stage('Push image to registry')
         {
             when {
@@ -84,7 +81,6 @@ pipeline {
         }
     }
 }
-
 
 
 

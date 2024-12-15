@@ -18,58 +18,66 @@ pipeline {
         //         git branch: 'main', credentialsId: 'Ndkn', url: 'https://github.com/ndknitor/AspTemplate'
         //     }
         // }
-        stage('Build') {
-            when {
-                expression { params.CD == "None" || params.CD == "Development" }
-            }
-            steps {
-                sh 'export DOTNET_CLI_TELEMETRY_OPTOUT=0'
-                sh 'dotnet restore'
-                sh 'dotnet build --no-restore'
-            }
-        }
-        stage('Test') {
-            when {
-                expression { params.CD == "None" || params.CD == "Development" }
-            }
-            parallel {
-                stage('Unit Tests') {
-                    steps {
-                        echo 'Running unit tests...'
-                        // Add your unit test steps here
-                    }
-                }
-                stage('Integration Tests') {
-                    steps {
-                        echo 'Running integration tests...'
-                        // Add your integration test steps here
-                    }
-                }
-            }
-        }
-        stage('Build image') {
-            when {
-                expression { params.CD == "Development" }
-            }
-            steps {
-                    sh 'docker build -t ${IMAGE_NAME} .'
-            }
-        }
-        stage('Push image to registry')
-        {
-            when {
-                expression { params.CD == "Development" }
-            }
-            steps {
-                script{
-                    withCredentials([usernamePassword(credentialsId: 'registry_credential', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'docker login utility.ndkn.local -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"'
-                        sh 'docker push ${IMAGE_NAME}'
-                        sh 'docker image prune -f'
-                    }
-                }
-            }
-        }
+        // stage('Build') {
+        //     when {
+        //         expression { params.CD == "None" || params.CD == "Development" }
+        //     }
+        //     steps {
+        //         sh 'export DOTNET_CLI_TELEMETRY_OPTOUT=0'
+        //         sh 'dotnet restore'
+        //         sh 'dotnet build --no-restore'
+        //     }
+        // }
+        // stage('Test') {
+        //     when {
+        //         expression { params.CD == "None" || params.CD == "Development" }
+        //     }
+        //     parallel {
+        //         stage('Unit Tests') {
+        //             steps {
+        //                 echo 'Running unit tests...'
+        //                 // Add your unit test steps here
+        //             }
+        //         }
+        //         stage('Integration Tests') {
+        //             steps {
+        //                 echo 'Running integration tests...'
+        //                 // Add your integration test steps here
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Build image') {
+        //     when {
+        //         expression { params.CD == "Development" }
+        //     }
+        //     steps {
+        //             sh 'docker build -t ${IMAGE_NAME} .'
+        //     }
+        // }
+        // stage('Push image to registry')
+        // {
+        //     when {
+        //         expression { params.CD == "Development" }
+        //     }
+        //     steps {
+        //         script{
+        //             withCredentials([usernamePassword(credentialsId: 'registry_credential', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+        //                 sh 'docker login utility.ndkn.local -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"'
+        //                 sh 'docker push ${IMAGE_NAME}'
+        //                 sh 'docker image prune -f'
+        //             }
+        //         }
+        //     }
+        // }
+        // stage('Clone Ops Repository') {
+        //     steps {
+        //         script {
+        //             // Clone the source repository
+        //             git credentialsId: "github_credential", url: "https://github.com/ndknitor/asp-template-gitops"
+        //         }
+        //     }
+        // }
         stage('Trigger ArgoCD sync for development environment') {
             when {
                 expression { params.CD == "Development" }
@@ -87,17 +95,6 @@ pipeline {
         }
     }
 }
-
-
-
-        // stage('Clone Ops Repository') {
-        //     steps {
-        //         script {
-        //             // Clone the source repository
-        //             git credentialsId: "GitNDKN", url: "https://github.com/ndknitor/asp-template-gitops"
-        //         }
-        //     }
-        // }
 
         
     //     stage('Deploy staging') {

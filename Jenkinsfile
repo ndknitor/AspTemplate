@@ -53,7 +53,6 @@ pipeline {
             }
             steps {
                     sh 'docker build -t ${IMAGE_NAME} .'
-                }
             }
         }
         stage('Push image to registry')
@@ -72,16 +71,19 @@ pipeline {
             }
         }
         stage('Trigger ArgoCD sync for development environment') {
-        steps {
-            script {
-                sh """
-                curl --insecure -X POST -H "Content-Type: application/json" -H "X-GitHub-Event: push" -d '{"repository": {"url": "https://github.com/ndknitor/asp-template-gitops"}, "ref": "refs/heads/main"}' k8s-1-w1.ndkn.local:30987/api/webhook
-                """
+            when {
+                expression { params.CD == "Development" }
+            }
+            steps {
+                script {
+                    sh """
+                    curl --insecure -X POST -H "Content-Type: application/json" -H "X-GitHub-Event: push" -d '{"repository": {"url": "https://github.com/ndknitor/asp-template-gitops"}, "ref": "refs/heads/main"}' k8s-1-w1.ndkn.local:30987/api/webhook
+                    """
+                }
             }
         }
     }
 }
-
 
 
 

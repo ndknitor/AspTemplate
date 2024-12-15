@@ -52,7 +52,7 @@ pipeline {
                 expression { params.CD == "Development" }
             }
             steps {
-                    sh 'docker build -t ${IMAGE_NAME} .'
+                    sh 'docker build -t ${IMAGE_NAME}:1 .'
             }
         }
         stage('Push image to registry')

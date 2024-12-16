@@ -98,11 +98,14 @@ pipeline {
                 expression { params.CD == "Staging" || params.CD == "PassProduction" || params.Auto}
             }
             steps {
-                sh 'docker tag ${IMAGE_NAME}:development ${IMAGE_NAME}:staging'
-                sh 'docker push ${IMAGE_NAME}:staging'
-                sh '''
-                    curl --insecure -X POST -H "Content-Type: application/json" -d '"restart"' -H "Authorization: Bearer ${ARGOCD_TOKEN}" "https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/resource/actions?appNamespace=argocd&namespace=${ARGOCD_NAMESPACE}&resourceName=${ARGOCD_RESOURCE_NAME_STAGING}&version=v1&kind=Deployment&group=apps" 
-                '''
+                    withCredentials([string(credentialsId: 'argocd_token', variable: 'ARGOCD_TOKEN')]) {
+                        sh 'docker tag ${IMAGE_NAME}:development ${IMAGE_NAME}:staging'
+                        sh 'docker push ${IMAGE_NAME}:staging'
+                        sh '''
+                            curl --insecure -X POST -H "Content-Type: application/json" -d '"restart"' -H "Authorization: Bearer ${ARGOCD_TOKEN}" "https://${ARGOCD_SERVER}/api/v1/applications/${ARGOCD_APP_NAME}/resource/actions?appNamespace=argocd&namespace=${ARGOCD_NAMESPACE}&resourceName=${ARGOCD_RESOURCE_NAME_STAGING}&version=v1&kind=Deployment&group=apps" 
+                        '''
+                    }
+
             }
         }
         stage('Scan') {

@@ -74,7 +74,6 @@ pipeline {
             }
             steps {
                 script {
-                    sh 'docker login utility.ndkn.local -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"'
                     sh 'docker push ${IMAGE_NAME}:development'
                     
                 }

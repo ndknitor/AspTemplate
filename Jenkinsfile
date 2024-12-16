@@ -56,7 +56,7 @@ pipeline {
                 expression { params.CD == "Development" || params.Auto}
             }
             steps {
-                    sh 'docker build -t ${IMAGE_NAME} .'
+                    sh 'docker build -t ${IMAGE_NAME}:development .'
             }
         }
         stage('Push image to registry') {
@@ -104,7 +104,7 @@ pipeline {
             parallel {
                 stage('Image scan') {
                     steps {
-                        sh 'trivy image ${IMAGE_NAME}'
+                        sh 'trivy image ${IMAGE_NAME}:staging'
                     }
                 }
                 // stage('Vulnerability scan') {

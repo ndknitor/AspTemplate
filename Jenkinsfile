@@ -59,16 +59,24 @@ pipeline {
                     sh 'docker build -t ${IMAGE_NAME}:development .'
             }
         }
+        stage('Registry authentication') {
+            steps {
+                script{
+                    withCredentials([usernamePassword(credentialsId: 'registry_credential', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        sh 'docker login utility.ndkn.local -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"'
+                    }
+                }
+            }
+        }
         stage('Push image to registry') {
             when {
                 expression { params.CD == "Development" || params.Auto}
             }
             steps {
-                script{
-                    withCredentials([usernamePassword(credentialsId: 'registry_credential', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
-                        sh 'docker login utility.ndkn.local -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"'
-                        sh 'docker push ${IMAGE_NAME}:development'
-                    }
+                script {
+                    sh 'docker login utility.ndkn.local -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}"'
+                    sh 'docker push ${IMAGE_NAME}:development'
+                    
                 }
             }
         }

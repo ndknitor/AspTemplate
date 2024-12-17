@@ -14,27 +14,31 @@ public class MainControllerTest
         public int Size { get; set; }
         public List<int> Expected { get; set; }
     }
-    private List<TestCase> LoadTestCases()
+
+    // TestCaseSource provider
+    public static IEnumerable<TestCaseData> GetPageTestCases()
     {
-        // Read and deserialize the JSON file
         var json = File.ReadAllText(TestCasesFilePath);
-        return JsonSerializer.Deserialize<List<TestCase>>(json, new JsonSerializerOptions
+        var testCases = JsonSerializer.Deserialize<List<TestCase>>(json, new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true
-        }) ?? new List<TestCase>();
-    }
+        });
 
+        if (testCases == null) yield break;
+
+        foreach (var testCase in testCases)
+        {
+            yield return new TestCaseData(testCase.Page, testCase.Size, testCase.Expected);
+        }
+    }
     [SetUp]
     public void Setup()
     {
     }
 
     [Test]
-    [TestCase(1, 3, new[] { 0, 1, 2 })]
-    [TestCase(2, 5, new[] { 5, 6, 7, 8, 9 })]
-    [TestCase(3, 4, new[] { 8, 9, 10, 11 })]
-    [TestCase(1, 0, new int[0])]
-    public void GetPage_ShouldReturnCorrectRange(int page, int size, int[] expected)
+    [TestCaseSource(nameof(GetPageTestCases))]
+    public void GetPage_ShouldReturnCorrectRange(int page, int size, List<int> expected)
     {
         // Arrange
         var controller = new MainController();

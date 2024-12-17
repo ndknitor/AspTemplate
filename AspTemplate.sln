@@ -5,6 +5,8 @@ VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspTemplate", "AspTemplate\AspTemplate.csproj", "{5AC07D49-E75E-485E-8687-64170B33EF00}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspTemplate.UnitTest", "AspTemplate.UnitTest\AspTemplate.UnitTest.csproj", "{B12C01BE-FA88-49E8-BE0D-09402F191952}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{5AC07D49-E75E-485E-8687-64170B33EF00}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5AC07D49-E75E-485E-8687-64170B33EF00}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5AC07D49-E75E-485E-8687-64170B33EF00}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B12C01BE-FA88-49E8-BE0D-09402F191952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B12C01BE-FA88-49E8-BE0D-09402F191952}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B12C01BE-FA88-49E8-BE0D-09402F191952}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B12C01BE-FA88-49E8-BE0D-09402F191952}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

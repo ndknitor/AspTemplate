@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.Annotations;
-namespace NewTemplate.Controllers;
+namespace AspTemplate.Controllers;
 [ApiController]
 [Route("/api/[controller]")]
 public class MainController : ControllerBase
@@ -48,7 +48,7 @@ public class MainController : ControllerBase
         return Ok(new { environment, connectionString = configuration.GetConnectionString("Default") });
     }
     [HttpGet("error")]
-    public IActionResult GetError([FromServices] IWebHostEnvironment environment, [FromServices] IConfiguration configuration)
+    public IActionResult GetError()
     {
         int a = int.Parse("a");
         return Ok();

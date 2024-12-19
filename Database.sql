@@ -38,7 +38,8 @@ CREATE TABLE Trip(
     EndDate datetime NOT NULL,
     BusId int NOT NULL,
     PRIMARY KEY(TripId),
-    FOREIGN KEY (RouteId) REFERENCES [Route](RouteId)
+    FOREIGN KEY (RouteId) REFERENCES [Route](RouteId),
+    FOREIGN KEY (BusId) REFERENCES [BusId](BusId)
 );;
 
 CREATE TABLE Seat(

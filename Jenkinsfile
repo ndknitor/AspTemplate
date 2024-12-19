@@ -3,14 +3,14 @@
 pipeline {
     agent any
     environment {
-        REGISTRY = "utility.ndkn.local"
-        IMAGE_NAME = "utility.ndkn.local/ndkn/asp-template"
+        // REGISTRY = "utility.ndkn.local"
+        // IMAGE_NAME = "utility.ndkn.local/ndkn/asp-template"
 
-        ARGOCD_SERVER= "192.168.121.104:30892"
-        ARGOCD_APP_NAME = "asp-template"
-        ARGOCD_NAMESPACE = "asp-template"
-        ARGOCD_RESOURCE_NAME_DEVELOPMENT = "asp-template-deployment-development"
-        ARGOCD_RESOURCE_NAME_STAGING = "asp-template-deployment-staging"
+        // ARGOCD_SERVER= "192.168.121.104:30892"
+        // ARGOCD_APP_NAME = "asp-template"
+        // ARGOCD_NAMESPACE = "asp-template"
+        // ARGOCD_RESOURCE_NAME_DEVELOPMENT = "asp-template-deployment-development"
+        // ARGOCD_RESOURCE_NAME_STAGING = "asp-template-deployment-staging"
     }
     stages {
         stage('Dummy')
